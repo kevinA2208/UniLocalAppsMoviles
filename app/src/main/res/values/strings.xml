@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">AppUbicaciones</string>
+
+    <!-- Común -->
+    <string name="app_title">UniLocal</string>
+    <string name="txt_register">Registrarse</string>
+    <string name="txt_login">Iniciar Sesión</string>
+    <string name="txt_email">Correo electrónico</string>
+    <string name="txt_password">Contraseña</string>
+    <string name="txt_recover_password">Recuperar contraseña</string>
+    <string name="txt_firstname">Nombres</string>
+    <string name="txt_lastname">Apellidos</string>
+    <string name="txt_username">Username</string>
+    <string name="txt_user_city">Ciudad de Residencia</string>
+
+    <!-- Errores -->
+    <string name="error_email">El correo electrónico es obligatorio y debe ser válido</string>
+    <string name="error_password">La contraseña es obligatoria y debe tener al menos 5 caracteres</string>
+    <string name="error_firstname">El nombre no puede estar vacío ni contener números</string>
+    <string name="error_lastname">El apellido no puede estar vacío ni contener números</string>
+    <string name="error_username">El nombre de usuario no puede estar vacío ni debe contener espacios</string>
+    <string name="error_city">Debe seleccionar una ciudad</string>
+</resources>
