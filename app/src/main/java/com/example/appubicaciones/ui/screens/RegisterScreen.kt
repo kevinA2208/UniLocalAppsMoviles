@@ -50,138 +50,140 @@ fun RegisterScreen(
     val isFormValid = !isNamesError && !isLastNamesError && !isUsernameError &&
             !isEmailError && !isPasswordError && !isCityError
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(R.string.app_title),
-            style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
-            color = Color(0xFF6A1B9A)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.txt_register))
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Nombres
-        OutlinedTextField(
-            value = names,
-            onValueChange = { names = it },
-            label = { Text(stringResource(R.string.txt_firstname)) },
-            isError = isNamesError,
-            supportingText = {
-                if (isNamesError) Text(stringResource(R.string.error_firstname))
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Apellidos
-        OutlinedTextField(
-            value = lastNames,
-            onValueChange = { lastNames = it },
-            label = { Text(stringResource(R.string.txt_lastname)) },
-            isError = isLastNamesError,
-            supportingText = {
-                if (isLastNamesError) Text(stringResource(R.string.error_lastname))
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Username
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text(stringResource(R.string.txt_username)) },
-            isError = isUsernameError,
-            supportingText = {
-                if (isUsernameError) Text(stringResource(R.string.error_username))
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Email
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(R.string.txt_email)) },
-            isError = isEmailError,
-            supportingText = {
-                if (isEmailError) Text(stringResource(R.string.error_email))
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Dropdown Ciudad
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
+    Surface {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                value = selectedCity?.displayName ?: "",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.txt_user_city)) },
-                isError = isCityError,
-                supportingText = {
-                    if (isCityError) Text(stringResource(R.string.error_city))
-                },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
+            Text(
+                text = stringResource(R.string.app_title),
+                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
+                color = Color(0xFF6A1B9A)
             )
-            ExposedDropdownMenu(
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = stringResource(R.string.txt_register))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Nombres
+            OutlinedTextField(
+                value = names,
+                onValueChange = { names = it },
+                label = { Text(stringResource(R.string.txt_firstname)) },
+                isError = isNamesError,
+                supportingText = {
+                    if (isNamesError) Text(stringResource(R.string.error_firstname))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Apellidos
+            OutlinedTextField(
+                value = lastNames,
+                onValueChange = { lastNames = it },
+                label = { Text(stringResource(R.string.txt_lastname)) },
+                isError = isLastNamesError,
+                supportingText = {
+                    if (isLastNamesError) Text(stringResource(R.string.error_lastname))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Username
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text(stringResource(R.string.txt_username)) },
+                isError = isUsernameError,
+                supportingText = {
+                    if (isUsernameError) Text(stringResource(R.string.error_username))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Email
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(stringResource(R.string.txt_email)) },
+                isError = isEmailError,
+                supportingText = {
+                    if (isEmailError) Text(stringResource(R.string.error_email))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Dropdown Ciudad
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = !expanded }
             ) {
-                CityEnum.entries.forEach { city ->
-                    DropdownMenuItem(
-                        text = { Text(city.displayName) },
-                        onClick = {
-                            selectedCity = city
-                            expanded = false
-                        }
-                    )
+                OutlinedTextField(
+                    value = selectedCity?.displayName ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.txt_user_city)) },
+                    isError = isCityError,
+                    supportingText = {
+                        if (isCityError) Text(stringResource(R.string.error_city))
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    CityEnum.entries.forEach { city ->
+                        DropdownMenuItem(
+                            text = { Text(city.displayName) },
+                            onClick = {
+                                selectedCity = city
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        // Contraseña
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(R.string.txt_password)) },
-            isError = isPasswordError,
-            supportingText = {
-                if (isPasswordError) Text(stringResource(R.string.error_password))
-            },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
+            // Contraseña
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(stringResource(R.string.txt_password)) },
+                isError = isPasswordError,
+                supportingText = {
+                    if (isPasswordError) Text(stringResource(R.string.error_password))
+                },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation()
+            )
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            onClick = {
-                selectedCity?.let {
-                    onRegisterClick(names, lastNames, username, email, it, password)
-                }
-            },
-            enabled = isFormValid,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
-        ) {
-            Text(stringResource(R.string.txt_register))
-        }
+            Button(
+                onClick = {
+                    selectedCity?.let {
+                        onRegisterClick(names, lastNames, username, email, it, password)
+                    }
+                },
+                enabled = isFormValid,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
+            ) {
+                Text(stringResource(R.string.txt_register))
+            }
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        TextButton(onClick = onLoginClick) {
-            Text(stringResource(R.string.txt_login), color = Color.Gray)
+            TextButton(onClick = onLoginClick) {
+                Text(stringResource(R.string.txt_login), color = Color.Gray)
+            }
         }
     }
 }

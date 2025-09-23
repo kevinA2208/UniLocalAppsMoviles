@@ -20,14 +20,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            RegisterScreen(
-                onRegisterClick = { names, lastNames, username, email, city, password ->
-                    // Lógica de registro
-                },
-                onLoginClick = {
-                    // Navegar a la pantalla de login
-                }
-            )
+            AppUbicacionesTheme {
+                RegisterScreen(
+                    onRegisterClick = { names, lastNames, username, email, city, password ->
+                        // Lógica de registro
+                    },
+                    onLoginClick = {
+                        // Navegar a la pantalla de login
+                    }
+                )
+            }
         }
     }
 }
