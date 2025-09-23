@@ -4,6 +4,7 @@ import android.util.Patterns
 import com.example.appubicaciones.R
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,7 +23,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit,
     onRegisterClick: () -> Unit,
-    onRecoverPasswordClick: () -> Unit
+    padding: PaddingValues = PaddingValues()
 ) {
     var email by remember { mutableStateOf("") }
     var isEmailError by remember { mutableStateOf(false) }
@@ -33,19 +35,12 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(padding)
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título principal
-            Text(
-                text = stringResource(R.string.app_title),
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF6A1B9A) // morado
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = stringResource(R.string.txt_login),
@@ -105,7 +100,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7237EC))
             ) {
                 Text(stringResource(R.string.txt_login))
             }
@@ -116,7 +111,7 @@ fun LoginScreen(
             TextButton(onClick = onRegisterClick) {
                 Text(stringResource(R.string.txt_register))
             }
-            TextButton(onClick = onRecoverPasswordClick) {
+            TextButton(onClick = onRegisterClick) {
                 Text(stringResource(R.string.txt_recover_password))
             }
         }

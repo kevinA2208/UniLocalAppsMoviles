@@ -14,38 +14,38 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appubicaciones.R
-
-enum class CityEnum(val displayName: String) {
-    BOGOTA("Bogotá"),
-    MEDELLIN("Medellín"),
-    CALI("Cali"),
-    BARRANQUILLA("Barranquilla"),
-    CARTAGENA("Cartagena")
-}
+import com.example.appubicaciones.data.model.City
+import com.example.appubicaciones.ui.screens.generics.DropdownSelector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    onRegisterClick: (String, String, String, String, CityEnum, String) -> Unit,
+    onRegisterClick: (String, String, String, String, City, String) -> Unit,
     onLoginClick: () -> Unit
 ) {
+    // Campos
     var names by remember { mutableStateOf("") }
     var lastNames by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var selectedCity by remember { mutableStateOf<City?>(null) }
 
-    // Dropdown city
-    var expanded by remember { mutableStateOf(false) }
-    var selectedCity by remember { mutableStateOf<CityEnum?>(null) }
+    // Touched flags
+    var namesTouched by remember { mutableStateOf(false) }
+    var lastNamesTouched by remember { mutableStateOf(false) }
+    var usernameTouched by remember { mutableStateOf(false) }
+    var emailTouched by remember { mutableStateOf(false) }
+    var passwordTouched by remember { mutableStateOf(false) }
+    var cityTouched by remember { mutableStateOf(false) }
 
     // Validaciones
-    val isNamesError = names.isBlank() || names.any { it.isDigit() }
-    val isLastNamesError = lastNames.isBlank() || lastNames.any { it.isDigit() }
-    val isUsernameError = username.isBlank() || username.contains(" ")
-    val isEmailError = email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    val isPasswordError = password.isBlank() || password.length < 5
-    val isCityError = selectedCity == null
+    val isNamesError = namesTouched && (names.isBlank() || names.any { it.isDigit() })
+    val isLastNamesError = lastNamesTouched && (lastNames.isBlank() || lastNames.any { it.isDigit() })
+    val isUsernameError = usernameTouched && (username.isBlank() || username.contains(" "))
+    val isEmailError = emailTouched && (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches())
+    val isPasswordError = passwordTouched && (password.isBlank() || password.length < 5)
+    val isCityError = cityTouched && selectedCity == null
 
     val isFormValid = !isNamesError && !isLastNamesError && !isUsernameError &&
             !isEmailError && !isPasswordError && !isCityError
@@ -55,7 +55,8 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = stringResource(R.string.app_title),
@@ -70,7 +71,10 @@ fun RegisterScreen(
             // Nombres
             OutlinedTextField(
                 value = names,
-                onValueChange = { names = it },
+                onValueChange = {
+                    names = it
+                    namesTouched = true
+                },
                 label = { Text(stringResource(R.string.txt_firstname)) },
                 isError = isNamesError,
                 supportingText = {
@@ -82,7 +86,10 @@ fun RegisterScreen(
             // Apellidos
             OutlinedTextField(
                 value = lastNames,
-                onValueChange = { lastNames = it },
+                onValueChange = {
+                    lastNames = it
+                    lastNamesTouched = true
+                },
                 label = { Text(stringResource(R.string.txt_lastname)) },
                 isError = isLastNamesError,
                 supportingText = {
@@ -94,7 +101,10 @@ fun RegisterScreen(
             // Username
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    usernameTouched = true
+                },
                 label = { Text(stringResource(R.string.txt_username)) },
                 isError = isUsernameError,
                 supportingText = {
@@ -106,7 +116,10 @@ fun RegisterScreen(
             // Email
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    emailTouched = true
+                },
                 label = { Text(stringResource(R.string.txt_email)) },
                 isError = isEmailError,
                 supportingText = {
@@ -117,44 +130,25 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Dropdown Ciudad
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
-            ) {
-                OutlinedTextField(
-                    value = selectedCity?.displayName ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.txt_user_city)) },
-                    isError = isCityError,
-                    supportingText = {
-                        if (isCityError) Text(stringResource(R.string.error_city))
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    CityEnum.entries.forEach { city ->
-                        DropdownMenuItem(
-                            text = { Text(city.displayName) },
-                            onClick = {
-                                selectedCity = city
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
+            // Dropdown Selector para Ciudad
+            DropdownSelector(
+                label = stringResource(R.string.txt_user_city),
+                options = City.entries,
+                selectedOption = selectedCity ?: City.BOGOTA,
+                onOptionSelected = {
+                    selectedCity = it
+                    cityTouched = true
+                },
+                getOptionLabel = { it.displayName }
+            )
 
             // Contraseña
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    passwordTouched = true
+                },
                 label = { Text(stringResource(R.string.txt_password)) },
                 isError = isPasswordError,
                 supportingText = {
@@ -174,7 +168,7 @@ fun RegisterScreen(
                 },
                 enabled = isFormValid,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7237EC))
             ) {
                 Text(stringResource(R.string.txt_register))
             }

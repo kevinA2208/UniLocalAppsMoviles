@@ -20,4 +20,32 @@
     <string name="error_lastname">El apellido no puede estar vacío ni contener números</string>
     <string name="error_username">El nombre de usuario no puede estar vacío ni debe contener espacios</string>
     <string name="error_city">Debe seleccionar una ciudad</string>
+    <string name="error_map_not_found">El mapa no se encuentra disponible actualmente</string>
+    <string name="error_favorites_not_found">No tienes ubicaciones favoritas</string>
+
+    <!-- NavBar bottom -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Perfil User -->
+    <string name="profile_title">Perfil de Usuario</string>
+    <string name="profile_edit">Editar perfil de Usuario</string>
+    <string name="profile_places_created">Ver historial de lugares creados</string>
+    <string name="profile_save_changes">Guardar cambios</string>
+
+    <!-- Crear lugar -->
+    <string name="create_place_title">Crear un nuevo lugar</string>
+    <string name="create_place_name">Nombre del lugar</string>
+    <string name="create_place_description">Descripción del lugar</string>
+    <string name="create_place_from_day">Desde</string>
+    <string name="create_place_to_day">Hasta</string>
+    <string name="create_place_from_hour">Hora de apertura</string>
+    <string name="create_place_to_hour">Hora de cierre</string>
+    <string name="create_place_phone">Teléfono</string>
+    <string name="create_place_category">Categoria</string>
+    <string name="create_place_address">Dirección</string>
+    <string name="save_place">Guardar Lugar</string>
+    <string name="create_place_schedule_label"> Horario del lugar </string>
+
 </resources>
