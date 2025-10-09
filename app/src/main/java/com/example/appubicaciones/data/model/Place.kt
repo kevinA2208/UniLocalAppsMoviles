@@ -11,5 +11,6 @@ data class Place(
     val closingHour: String,
     val phone: String,
     val category: PlaceCategory,
-    val address: String
+    val address: String,
+    val verification_completed: Boolean = false
 )

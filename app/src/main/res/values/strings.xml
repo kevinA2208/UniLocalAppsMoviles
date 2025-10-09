@@ -58,5 +58,26 @@
     <string name="resend_otp">Reenviar Correo Electrónico</string>
     <string name="reset_password">Restablecer contraseña</string>
 
+    <!-- Lugares Creados por Usuario -->
+    <string name="created_places_title">Historial de lugares creados</string>
+    <string name="no_created_places_pending">No hay lugares pendientes por aprobar.</string>
+    <string name="no_created_places_approved">No hay lugares aprobados todavía.</string>
+    <string name="places_approved_title">Aprobados</string>
+    <string name="places_pending_title">Pendientes</string>
+    <string name="detail_place">Ver detalles</string>
+
+    <!-- Detalle de lugar -->
+    <string name="place_detail_title">Detalle del lugar</string>
+    <string name="place_detail_no_images">No hay imágenes disponibles</string>
+    <string name="place_detail_open">Este lugar está abierto</string>
+    <string name="place_detail_description">Descripción: %1$s</string>
+    <string name="place_detail_schedule">Horario: %1$s a %2$s, de %3$s a %4$s</string>
+    <string name="place_detail_phone">Teléfonos: %1$s</string>
+    <string name="place_detail_calification">Calificaciones:</string>
+    <string name="place_detail_comments">Ver comentarios</string>
+    <string name="place_detail_products_services">Ver productos / servicios</string>
+    <string name="place_detail_category">Categoria: %1$s</string>
+    <string name="place_detail_address">Dirección: %1$s</string>
+
 
 </resources>
