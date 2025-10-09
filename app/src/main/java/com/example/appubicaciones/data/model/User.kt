@@ -1,6 +1,7 @@
 package com.example.appubicaciones.data.model
 
 data class User(
+    val id: Int = 0,
     val names: String,
     val lastnames: String,
     val username: String,

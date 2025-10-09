@@ -21,8 +21,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 @Composable
 fun LoginScreen(
-    onLoginClick: (String, String) -> Unit,
+    onLoginClick: (String, String) -> Boolean,
     onRegisterClick: () -> Unit,
+    onRecoverPasswordClick: () -> Unit,
     padding: PaddingValues = PaddingValues()
 ) {
     var email by remember { mutableStateOf("") }
@@ -30,6 +31,8 @@ fun LoginScreen(
 
     var password by remember { mutableStateOf("") }
     var isPasswordError by remember { mutableStateOf(false) }
+
+    var loginError by remember { mutableStateOf(false) }
 
     Surface {
         Column(
@@ -92,9 +95,22 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            if (loginError) {
+                Text(
+                    text = stringResource(R.string.bad_credentials),
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             // Botón Login
             Button(
-                onClick = { onLoginClick(email, password) },
+                onClick = {
+                    val success = onLoginClick(email, password)
+                    loginError = !success
+                },
                 enabled = !isEmailError && !isPasswordError && email.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +127,7 @@ fun LoginScreen(
             TextButton(onClick = onRegisterClick) {
                 Text(stringResource(R.string.txt_register))
             }
-            TextButton(onClick = onRegisterClick) {
+            TextButton(onClick = onRecoverPasswordClick) {
                 Text(stringResource(R.string.txt_recover_password))
             }
         }

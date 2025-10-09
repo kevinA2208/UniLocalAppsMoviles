@@ -2,6 +2,7 @@ package com.example.appubicaciones.data.model;
 
 
 data class Place(
+    val id: Int = 0,
     val name: String,
     val description: String,
     val openDay: Days,

@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.ui.screens.LoginScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
@@ -51,7 +50,8 @@ fun ContentUser(
             if(isLoggedIn){
                 UserProfileScreen(
                     tabNavController = tabNavController,
-                    onEditClick = { tabNavController.navigate(UserRouteTab.EditProfile) }
+                    onEditClick = { tabNavController.navigate(UserRouteTab.EditProfile) },
+                    onRecoverPasswordClick = { rootNavController.navigate(RouteScreen.RecoverPassword) }
                 )
             } else {
                 LoginScreen(
@@ -59,14 +59,19 @@ fun ContentUser(
                         rootNavController.navigate(RouteScreen.Register)
                     },
                     onLoginClick = { email, password ->
-                        if (email == "admin@gmail.com" && password == "12345") {
+                        if (email == "usuario@gmail.com" && password == "12345") {
                             onLoginSuccess()
                             tabNavController.navigate(UserRouteTab.UserProfile) {
                                 popUpTo(UserRouteTab.UserProfile) { inclusive = true }
                             }
+                            true
                         } else {
                             Log.d("LoginScreen", "Credenciales incorrectas")
+                            false
                         }
+                    },
+                    onRecoverPasswordClick = {
+                        rootNavController.navigate(RouteScreen.RecoverPassword)
                     }
                 )
             }

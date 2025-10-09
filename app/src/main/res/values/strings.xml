@@ -22,6 +22,7 @@
     <string name="error_city">Debe seleccionar una ciudad</string>
     <string name="error_map_not_found">El mapa no se encuentra disponible actualmente</string>
     <string name="error_favorites_not_found">No tienes ubicaciones favoritas</string>
+    <string name="bad_credentials">Correo o contraseña incorrectos</string>
 
     <!-- NavBar bottom -->
     <string name="nav_home">Inicio</string>
@@ -47,5 +48,15 @@
     <string name="create_place_address">Dirección</string>
     <string name="save_place">Guardar Lugar</string>
     <string name="create_place_schedule_label"> Horario del lugar </string>
+
+    <!-- Recuperar password -->
+    <string name="recover_password_title">Recuperar contraseña</string>
+    <string name="recover_password_instructions">Se ha enviado un correo a la dirección %1$s, ingrese su nueva contraseña y el código OTP:</string>
+    <string name="repeat_password">Repite la contraseña:</string>
+    <string name="otp_code">Código OTP:</string>
+    <string name="new_password">Nueva contraseña:</string>
+    <string name="resend_otp">Reenviar Correo Electrónico</string>
+    <string name="reset_password">Restablecer contraseña</string>
+
 
 </resources>

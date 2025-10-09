@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.appubicaciones.data.model.Days
@@ -148,6 +149,48 @@ fun CreatePlaceScreen(
             label = { Text(stringResource(R.string.create_place_address)) },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botones de acciones adicionales (Imágenes y Cargar ubicación)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = { /* Acción para abrir selector de imágenes */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2D9FF)),
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(45.dp)
+            ) {
+                Text(
+                    text = "Imágenes",
+                    color = Color(0xFF5E35B1),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            OutlinedButton(
+                onClick = { /* Acción para cargar ubicación */ },
+                border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp, brush = SolidColor(
+                    Color(0xFF5E35B1)
+                )
+                ),
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(45.dp)
+            ) {
+                Text(
+                    text = "Cargar ubicación",
+                    color = Color(0xFF5E35B1),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
