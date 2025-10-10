@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -58,5 +59,6 @@ enum class Destination(
 ){
     HOME(UserRouteTab.Map, R.string.nav_home, Icons.Default.Home),
     FAVORITES(UserRouteTab.Favorites, R.string.nav_favorites, Icons.Default.Favorite),
-    PROFILE(UserRouteTab.UserProfile, R.string.nav_profile, Icons.Default.AccountCircle)
+    PROFILE(UserRouteTab.UserProfile, R.string.nav_profile, Icons.Default.AccountCircle),
+    SERVICES(UserRouteTab.Services, R.string.nav_services, Icons.Default.LocationOn)
 }

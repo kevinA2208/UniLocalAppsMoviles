@@ -12,6 +12,7 @@
     <string name="txt_lastname">Apellidos</string>
     <string name="txt_username">Username</string>
     <string name="txt_user_city">Ciudad de Residencia</string>
+    <string name="txt_services">Servicios</string>
 
     <!-- Errores -->
     <string name="error_email">El correo electrónico es obligatorio y debe ser válido</string>
@@ -27,6 +28,7 @@
     <string name="nav_home">Inicio</string>
     <string name="nav_favorites">Favoritos</string>
     <string name="nav_profile">Perfil</string>
+    <string name="nav_services">Servicios</string>
 
     <!-- Perfil User -->
     <string name="profile_title">Perfil de Usuario</string>

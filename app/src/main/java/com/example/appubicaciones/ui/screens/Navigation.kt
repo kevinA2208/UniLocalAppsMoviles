@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.ui.screens.user.HomeUserScreen
 
