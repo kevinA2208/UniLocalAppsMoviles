@@ -29,7 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil3.compose.rememberAsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.ProductService
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
