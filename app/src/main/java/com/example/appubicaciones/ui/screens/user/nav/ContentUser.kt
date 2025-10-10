@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -23,14 +24,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appubicaciones.config.RouteScreen
+import com.example.appubicaciones.data.mocks.listProductsServices
 import com.example.appubicaciones.data.mocks.approvedPlaces
 import com.example.appubicaciones.data.mocks.mockPlaces
-import com.example.appubicaciones.data.mocks.mockProductServices
+import com.example.appubicaciones.ui.screens.LoginScreen
+import com.example.appubicaciones.ui.screens.services.CreateProductServiceScreen
+import com.example.appubicaciones.ui.screens.services.DetailProductServiceScreen
 import com.example.appubicaciones.data.model.Days
 import com.example.appubicaciones.data.model.Place
 import com.example.appubicaciones.data.model.PlaceCategory
-import com.example.appubicaciones.ui.screens.LoginScreen
 import com.example.appubicaciones.ui.screens.comments.PlaceCommentsScreen
+import com.example.appubicaciones.ui.screens.services.AddImageProductServiceScreen
 import com.example.appubicaciones.ui.screens.services.ServiceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CommentDetailScreen
 import com.example.appubicaciones.ui.screens.user.tabs.AddImagesScreen
@@ -39,6 +43,7 @@ import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
 import com.example.appubicaciones.ui.screens.user.tabs.PlaceDetailScreen
+import com.example.appubicaciones.ui.screens.user.tabs.SearchPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.ResponseScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserCreatedPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
@@ -58,6 +63,8 @@ fun ContentUser(
             tabNavController.navigate(UserRouteTab.CreatePlace)
         }
     }
+
+    var mockProductServices by remember { mutableStateOf(listProductsServices) }
 
     NavHost(
         modifier = Modifier.padding(padding),
@@ -213,6 +220,45 @@ fun ContentUser(
                 }
             )
         }
+
+        composable<UserRouteTab.EditProfile> {
+            EditUserProfileScreen(
+                onSaveClick = { names, lastnames, username, city ->
+                    tabNavController.popBackStack()
+                }
+            )
+        }
+
+        composable<UserRouteTab.Services> {
+            ServiceScreen(
+                navController = tabNavController,
+                products = mockProductServices,
+                onViewDetailProduct = { tabNavController.navigate(UserRouteTab.DetailProductService) }
+            )
+        }
+
+        composable<UserRouteTab.DetailProductService> {
+            DetailProductServiceScreen(
+                navController = tabNavController,
+                product = mockProductServices.get(0)
+            )
+        }
+
+        composable<UserRouteTab.AddImageProductService> {
+            AddImageProductServiceScreen(
+                navController = tabNavController
+            )
+        }
+
+        composable<UserRouteTab.CreateProductService> {
+            CreateProductServiceScreen(
+                navController = tabNavController
+            ) { nuevo ->
+                /* TODO */
+//                mockProductServices = mockProductServices + nuevo
+            }
+        }
+
         composable<UserRouteTab.PlaceDetail> { backStackEntry ->
             val placeId = backStackEntry.arguments?.getInt("placeId")
                 ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
@@ -223,7 +269,7 @@ fun ContentUser(
             place?.let {
                 PlaceDetailScreen(
                     place = it,
-                    onViewComments = { tabNavController.navigate(UserRouteTab.PlaceComments(it.id)) },
+                    onViewComments = { /* TODO */ },
                     onViewProducts = { tabNavController.navigate(UserRouteTab.Services) },
                     onDeletePlace = { /* TODO */ }
                 )
@@ -233,6 +279,15 @@ fun ContentUser(
             EditUserProfileScreen(
                 onSaveClick = { names, lastnames, username, city ->
                     tabNavController.popBackStack()
+                }
+            )
+        }
+
+        composable<UserRouteTab.SearchPlaces> {
+            SearchPlacesScreen(
+                allPlaces = mockPlaces,
+                onPlaceClick = { place ->
+                    tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
                 }
             )
         }

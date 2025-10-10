@@ -24,6 +24,15 @@ sealed class UserRouteTab {
     data object Services : UserRouteTab()
 
     @Serializable
+    data object  DetailProductService : UserRouteTab()
+
+    @Serializable
+    data object CreateProductService: UserRouteTab()
+
+    @Serializable
+    data object AddImageProductService: UserRouteTab()
+
+    @Serializable
     data object UserCreatedPlaces : UserRouteTab()
 
     @Serializable
@@ -44,4 +53,8 @@ sealed class UserRouteTab {
 
     @Serializable
     data class CommentResponse(val commentId: Int) : UserRouteTab()
+    @Serializable
+    data object SearchPlaces : UserRouteTab()
+
+
 }

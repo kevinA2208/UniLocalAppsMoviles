@@ -25,14 +25,15 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import coil.util.DebugLogger
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.ProductService
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 import okhttp3.OkHttpClient
 
 @Composable
-fun ServiceScreen(navController: NavController, products: List<ProductService>) {
+
+fun ServiceScreen(navController: NavController, products: List<ProductService>, onViewDetailProduct: () -> Unit = {},) {
+
     val context = LocalContext.current
     val imageLoader = remember {
         val client = OkHttpClient.Builder()
@@ -58,7 +59,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>) 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                    navController.navigate(UserRouteTab.CreatePlace)
+                    navController.navigate(UserRouteTab.CreateProductService)
                 }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
@@ -88,7 +89,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>) 
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable {
-                                navController.navigate(UserRouteTab.CreatePlace)
+                                onViewDetailProduct()
                             }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {

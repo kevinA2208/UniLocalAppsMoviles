@@ -81,7 +81,9 @@
     <string name="place_detail_address">Dirección: %1$s</string>
 
     <!-- Servicios -->
-    <string name="txt_services">Productos / Servicios</string>
+    <string name="txt_services">Lista de productos / Servicios</string>
+    <string name="txt_detail_product_services">Detalle de producto / Servicios</string>
+    <string name="txt_create_product_services">Crear producto / Servicios</string>
 
     <!-- Comentarios de Lugar -->
     <string name="place_comments_title">Comentarios de Lugar</string>
