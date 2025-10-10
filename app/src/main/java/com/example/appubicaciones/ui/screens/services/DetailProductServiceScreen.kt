@@ -40,29 +40,36 @@ fun DetailProductServiceScreen(navController: NavController, product: ProductSer
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Volver") },
+                title = { Text(stringResource(R.string.detail_product_service_back)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.detail_product_service_back_content_description)
+                        )
                     }
                 }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navController.navigate(UserRouteTab.DetailProductService)
-            },
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = Color.White
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(UserRouteTab.DetailProductService)
+                },
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = Color.White
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.detail_product_service_delete)
+                )
             }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
 
             Text(
-                text = stringResource(R.string.txt_detail_product_services),
+                text = stringResource(R.string.detail_product_service_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
@@ -78,11 +85,13 @@ fun DetailProductServiceScreen(navController: NavController, product: ProductSer
                     .fillMaxWidth()
                     .height(180.dp)
             )
+
             Spacer(Modifier.height(12.dp))
+
             Text(
                 buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Nombre: ")
+                        append(stringResource(R.string.detail_product_service_name_label))
                     }
                     append(product.name)
                 }
@@ -91,7 +100,7 @@ fun DetailProductServiceScreen(navController: NavController, product: ProductSer
             Text(
                 buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Descripción: ")
+                        append(stringResource(R.string.detail_product_service_description_label))
                     }
                     append(product.description)
                 }
@@ -100,9 +109,9 @@ fun DetailProductServiceScreen(navController: NavController, product: ProductSer
             Text(
                 buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("Precio: ")
+                        append(stringResource(R.string.detail_product_service_price_label))
                     }
-                    append(product.price?.toString() ?: "N/A")
+                    append(product.price?.toString() ?: stringResource(R.string.detail_product_service_price_na))
                 }
             )
         }

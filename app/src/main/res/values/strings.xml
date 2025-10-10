@@ -49,6 +49,12 @@
     <string name="create_place_address">Dirección</string>
     <string name="save_place">Guardar Lugar</string>
     <string name="create_place_schedule_label"> Horario del lugar </string>
+    <string name="create_place_selected_images">Imágenes seleccionadas: %1$d</string>
+    <string name="create_place_add_images">Imágenes</string>
+    <string name="create_place_load_location">Cargar ubicación</string>
+    <string name="create_place_image_description">Imagen %1$d</string>
+    <string name="create_place_delete_image">Eliminar</string>
+    <string name="create_place_remove_all_images">Quitar todas</string>
 
     <!-- Recuperar password -->
     <string name="recover_password_title">Recuperar contraseña</string>
@@ -124,6 +130,7 @@
     <string name="favorites_open">Abre</string>
     <string name="favorites_close">Cierra</string>
     <string name="favorites_see_more">Ver más</string>
+    <string name="favorites_need_login">Debes iniciar sesión para ver tus lugares favoritos.</string>
 
     <!-- Pantalla: Añadir imágenes -->
     <string name="add_images_title">Añadir imágenes del lugar</string>
@@ -136,6 +143,9 @@
         Para la aprobación del lugar en UniLocal,
         deberá añadir mínimo 1 imagen.
     </string>
+    <string name="add_images_services_instructions">
+        Debes añadir por lo menos una imagen del servicio o producto que ofrece el lugar.
+    </string>
     <string name="add_images_save">Guardar imágenes</string>
     <string name="add_images_image_description">Imagen %1$d</string>
 
@@ -144,5 +154,57 @@
     <string name="add_location_title">Añadir ubicación del lugar</string>
     <string name="add_location_label_address">Dirección:</string>
     <string name="add_location_save_button">Guardar ubicación</string>
+
+    <!-- Crear producto / servicio -->
+    <string name="create_product_save">Guardar producto / servicio</string>
+    <string name="create_product_name">Nombre</string>
+    <string name="create_product_name_error">El nombre es obligatorio</string>
+    <string name="create_product_description">Descripción</string>
+    <string name="create_product_description_error">La descripción es obligatoria</string>
+    <string name="create_product_apply_price_title">¿Aplica precio?</string>
+    <string name="create_product_apply_price_hint">En caso de que el producto o servicio tenga un precio, ingréselo (COP)</string>
+    <string name="create_product_price_label">Precio (COP)</string>
+    <string name="create_product_price_error">Ingresa un precio válido mayor que 0</string>
+    <string name="create_product_images">Imágenes</string>
+
+    <!-- Pantalla: Detalle de producto o servicio -->
+    <string name="detail_product_service_back">Volver</string>
+    <string name="detail_product_service_back_content_description">Atrás</string>
+    <string name="detail_product_service_delete">Eliminar</string>
+    <string name="detail_product_service_title">Detalle del producto o servicio</string>
+    <string name="detail_product_service_name_label">Nombre: </string>
+    <string name="detail_product_service_description_label">Descripción: </string>
+    <string name="detail_product_service_price_label">Precio: </string>
+    <string name="detail_product_service_price_na">N/A</string>
+
+    <!-- Pantalla: Lista de productos o servicios -->
+    <string name="services_title">Productos o servicios del lugar</string>
+    <string name="services_add">Agregar</string>
+    <string name="services_view_detail">Ver detalle</string>
+
+    <!-- Pantalla: Mapa -->
+    <string name="map_search_placeholder">Buscar lugar...</string>
+    <string name="map_search_icon_description">Buscar</string>
+    <string name="map_add_place_description">Añadir lugar</string>
+
+    <!-- Pantalla: Buscar lugares -->
+    <string name="search_places_title">Búsqueda de lugares</string>
+    <string name="search_places_show_filters">Mostrar filtros</string>
+    <string name="search_places_hide_filters">Ocultar filtros</string>
+    <string name="search_places_placeholder">Buscar</string>
+    <string name="search_places_category_filter_label">Filtrar lugares por categoría</string>
+    <string name="search_places_category_label">Categoría:</string>
+    <string name="search_places_all_categories">Todas</string>
+    <string name="search_places_distance_filter_label">Filtrar lugares dentro de la distancia ingresada</string>
+    <string name="search_places_distance_label">Distancia:</string>
+    <string name="search_places_apply_filters">Aplicar filtros</string>
+    <string name="search_places_no_results">No se encontraron lugares.</string>
+    <string name="search_places_view_more">Ver más</string>
+    <string name="search_places_hide_details">Ocultar</string>
+    <string name="search_places_description">Descripción: %1$s</string>
+    <string name="search_places_no_description">Sin descripción</string>
+    <string name="search_places_phone">Teléfono: %1$s</string>
+    <string name="search_places_category">Categoría: %1$s</string>
+    <string name="search_places_schedule">Horario: %1$s %2$s - %3$s %4$s</string>
 
 </resources>

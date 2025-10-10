@@ -69,18 +69,19 @@ fun CreatePlaceScreen(
         selectedImages.addAll(uris.take(maxImages))
     }
 
-
     LaunchedEffect(initialAddress) {
         if (initialAddress.isNotBlank()) address = initialAddress
     }
+
     if (pickedImages.isNotEmpty()) {
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "Imágenes seleccionadas: ${pickedImages.size}",
+            text = stringResource(R.string.create_place_selected_images, pickedImages.size),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary
         )
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -186,15 +187,27 @@ fun CreatePlaceScreen(
                     .weight(1f)
                     .height(45.dp)
             ) {
-                Text("Imágenes", color = Color(0xFF5E35B1), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    stringResource(R.string.create_place_add_images),
+                    color = Color(0xFF5E35B1),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
             OutlinedButton(
                 onClick = onLoadLocationClick,
                 border = BorderStroke(1.dp, Color(0xFF5E35B1)),
                 shape = MaterialTheme.shapes.large,
-                modifier = Modifier.weight(1f).height(45.dp)
-            ) { Text("Cargar ubicación", color = Color(0xFF5E35B1), style = MaterialTheme.typography.bodyMedium) }
+                modifier = Modifier
+                    .weight(1f)
+                    .height(45.dp)
+            ) {
+                Text(
+                    stringResource(R.string.create_place_load_location),
+                    color = Color(0xFF5E35B1),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
 
         if (selectedImages.isNotEmpty()) {
@@ -213,7 +226,10 @@ fun CreatePlaceScreen(
                     ) {
                         AsyncImage(
                             model = uri,
-                            contentDescription = "Imagen $index",
+                            contentDescription = stringResource(
+                                R.string.create_place_image_description,
+                                index + 1
+                            ),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.matchParentSize()
                         )
@@ -225,7 +241,7 @@ fun CreatePlaceScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Eliminar",
+                                contentDescription = stringResource(R.string.create_place_delete_image),
                                 tint = Color.White
                             )
                         }
@@ -235,9 +251,10 @@ fun CreatePlaceScreen(
             Spacer(Modifier.height(8.dp))
             AssistChip(
                 onClick = { selectedImages.clear() },
-                label = { Text("Quitar todas") }
+                label = { Text(stringResource(R.string.create_place_remove_all_images)) }
             )
         }
+
         Spacer(Modifier.height(16.dp))
 
         Button(

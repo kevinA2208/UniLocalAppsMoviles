@@ -13,29 +13,27 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.appubicaciones.data.model.*
+import com.example.appubicaciones.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchPlacesScreen(
-    allPlaces: List<Place>, // pásame la fuente (mockPlaces o VM)
+    allPlaces: List<Place>,
     categories: List<PlaceCategory> = PlaceCategory.entries,
     onPlaceClick: (Place) -> Unit = {}
 ) {
-    // ===== Filtros (persisten) =====
     var name by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf<PlaceCategory?>(null) }
     var distance by rememberSaveable { mutableStateOf(35) }
     var unit by rememberSaveable { mutableStateOf("Km") }
     var catExpanded by remember { mutableStateOf(false) }
     var unitExpanded by remember { mutableStateOf(false) }
-
-    // Acordeón de filtros
     var showFilters by rememberSaveable { mutableStateOf(true) }
 
-    // Resultados
     var results by rememberSaveable(stateSaver = listSaver(
         save = { list -> list.map { it.id } },
         restore = { ids -> allPlaces.filter { it.id in ids } }
@@ -51,56 +49,78 @@ fun SearchPlacesScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Header
-        Text("UniLocal", style = ty.headlineLarge.copy(fontWeight = FontWeight.SemiBold), color = cs.primary)
-        Text("Búsqueda de lugares", style = ty.bodyMedium, color = cs.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+        Text(
+            text = stringResource(R.string.search_places_title),
+            style = ty.bodyMedium,
+            color = cs.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+        )
 
         // Toggle acordeón
         TextButton(onClick = { showFilters = !showFilters }) {
             Icon(if (showFilters) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null)
             Spacer(Modifier.width(6.dp))
-            Text(if (showFilters) "Ocultar filtros" else "Mostrar filtros")
+            Text(
+                text = if (showFilters)
+                    stringResource(R.string.search_places_hide_filters)
+                else
+                    stringResource(R.string.search_places_show_filters)
+            )
         }
 
-        // ===== Filtros =====
+        // Filtros
         AnimatedVisibility(
             visible = showFilters,
             enter = fadeIn() + expandVertically(),
-            exit  = fadeOut() + shrinkVertically()
+            exit = fadeOut() + shrinkVertically()
         ) {
             Column {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Buscar") },
+                    placeholder = { Text(stringResource(R.string.search_places_placeholder)) },
                     singleLine = true,
                     shape = MaterialTheme.shapes.large
                 )
 
                 Spacer(Modifier.height(16.dp))
 
-                Text("Filtrar lugares por categoría", style = ty.labelLarge, color = cs.onSurfaceVariant)
+                Text(
+                    stringResource(R.string.search_places_category_filter_label),
+                    style = ty.labelLarge,
+                    color = cs.onSurfaceVariant
+                )
                 Spacer(Modifier.height(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text("Categoría:", modifier = Modifier.weight(1f), color = cs.onSurface)
+                    Text(
+                        stringResource(R.string.search_places_category_label),
+                        modifier = Modifier.weight(1f),
+                        color = cs.onSurface
+                    )
                     ExposedDropdownMenuBox(
                         expanded = catExpanded,
                         onExpandedChange = { catExpanded = it },
                         modifier = Modifier.weight(1f)
                     ) {
                         OutlinedTextField(
-                            value = category?.displayName ?: "Todas",
+                            value = category?.displayName ?: stringResource(R.string.search_places_all_categories),
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(catExpanded) },
                             modifier = Modifier.menuAnchor().fillMaxWidth()
                         )
                         ExposedDropdownMenu(expanded = catExpanded, onDismissRequest = { catExpanded = false }) {
-                            DropdownMenuItem(text = { Text("Todas") }, onClick = { category = null; catExpanded = false })
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.search_places_all_categories)) },
+                                onClick = { category = null; catExpanded = false }
+                            )
                             categories.forEach { c ->
-                                DropdownMenuItem(text = { Text(c.displayName) }, onClick = { category = c; catExpanded = false })
+                                DropdownMenuItem(
+                                    text = { Text(c.displayName) },
+                                    onClick = { category = c; catExpanded = false }
+                                )
                             }
                         }
                     }
@@ -108,11 +128,19 @@ fun SearchPlacesScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                Text("Filtrar lugares dentro de la distancia ingresada", style = ty.labelLarge, color = cs.onSurfaceVariant)
+                Text(
+                    stringResource(R.string.search_places_distance_filter_label),
+                    style = ty.labelLarge,
+                    color = cs.onSurfaceVariant
+                )
                 Spacer(Modifier.height(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text("Distancia:", modifier = Modifier.weight(1f), color = cs.onSurface)
+                    Text(
+                        stringResource(R.string.search_places_distance_label),
+                        modifier = Modifier.weight(1f),
+                        color = cs.onSurface
+                    )
                     OutlinedTextField(
                         value = distance.toString(),
                         onValueChange = { v -> v.toIntOrNull()?.let { distance = it.coerceIn(0, 999) } },
@@ -130,7 +158,10 @@ fun SearchPlacesScreen(
                         )
                         ExposedDropdownMenu(expanded = unitExpanded, onDismissRequest = { unitExpanded = false }) {
                             listOf("Km", "m").forEach { u ->
-                                DropdownMenuItem(text = { Text(u) }, onClick = { unit = u; unitExpanded = false })
+                                DropdownMenuItem(
+                                    text = { Text(u) },
+                                    onClick = { unit = u; unitExpanded = false }
+                                )
                             }
                         }
                     }
@@ -141,7 +172,7 @@ fun SearchPlacesScreen(
                 Button(
                     onClick = {
                         results = filterPlaces(allPlaces, name, category, distance, unit)
-                        showFilters = false // opcional: plegar tras aplicar
+                        showFilters = false
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large,
@@ -149,16 +180,18 @@ fun SearchPlacesScreen(
                         containerColor = cs.primaryContainer,
                         contentColor = cs.onPrimaryContainer
                     )
-                ) { Text("Aplicar filtros") }
+                ) {
+                    Text(stringResource(R.string.search_places_apply_filters))
+                }
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // ===== Resultados (lista tipo favoritos) =====
+        // Resultados
         if (results.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No se encontraron lugares.", color = cs.onSurfaceVariant)
+                Text(stringResource(R.string.search_places_no_results), color = cs.onSurfaceVariant)
             }
         } else {
             LazyColumn(
@@ -190,23 +223,34 @@ private fun ResultItemCard(place: Place, onClick: () -> Unit) {
             Text(place.address, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             TextButton(onClick = { expanded = !expanded }, modifier = Modifier.align(Alignment.End)) {
-                Text(if (expanded) "Ocultar" else "Ver más")
+                Text(
+                    if (expanded)
+                        stringResource(R.string.search_places_hide_details)
+                    else
+                        stringResource(R.string.search_places_view_more)
+                )
             }
 
             AnimatedVisibility(visible = expanded, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
                 Column(Modifier.padding(top = 6.dp)) {
-                    Text("Descripción: " + place.description.ifBlank { "Sin descripción" })
-                    Text("Teléfono: " + place.phone)
-                    Text("Categoría: " + place.category.displayName)
-                    Text("Horario: ${place.openDay.displayName} ${place.openingHour} - ${place.closeDay.displayName} ${place.closingHour}")
+                    Text(stringResource(R.string.search_places_description, place.description.ifBlank { stringResource(R.string.search_places_no_description) }))
+                    Text(stringResource(R.string.search_places_phone, place.phone))
+                    Text(stringResource(R.string.search_places_category, place.category.displayName))
+                    Text(
+                        stringResource(
+                            R.string.search_places_schedule,
+                            place.openDay.displayName,
+                            place.openingHour,
+                            place.closeDay.displayName,
+                            place.closingHour
+                        )
+                    )
                 }
             }
         }
     }
 }
 
-/** Filtro simple: por nombre y categoría.
- * Si quieres filtrar por distancia real, calcula distancias aquí. */
 private fun filterPlaces(
     data: List<Place>,
     name: String,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -40,12 +41,10 @@ fun CreateProductServiceScreen(
     var applyPrice by remember { mutableStateOf(false) }
     var price by remember { mutableStateOf("") }
 
-    // Estados de error
     var nameError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
     var priceError by remember { mutableStateOf(false) }
 
-    // Validar si todo está correcto
     val isFormValid = name.isNotBlank() &&
             description.isNotBlank() &&
             (!applyPrice || (price.toDoubleOrNull() != null && price.toDouble() > 0))
@@ -53,10 +52,10 @@ fun CreateProductServiceScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Volver") },
+                title = { Text(stringResource(R.string.add_images_back)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.add_images_back))
                     }
                 }
             )
@@ -64,7 +63,6 @@ fun CreateProductServiceScreen(
         bottomBar = {
             Button(
                 onClick = {
-                    // Validar campos antes de guardar
                     nameError = name.isBlank()
                     descriptionError = description.isBlank()
                     priceError = applyPrice && (price.toDoubleOrNull() == null || price.toDouble() <= 0)
@@ -85,13 +83,18 @@ fun CreateProductServiceScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                enabled = isFormValid // 🔒 Solo habilitado si todo es válido
+                enabled = isFormValid
             ) {
-                Text("Guardar producto / servicio")
+                Text(stringResource(R.string.create_product_save))
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp),
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxWidth()
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -112,13 +115,13 @@ fun CreateProductServiceScreen(
                     name = it
                     if (it.isNotBlank()) nameError = false
                 },
-                label = { Text("Nombre") },
+                label = { Text(stringResource(R.string.create_product_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = nameError
             )
             if (nameError) {
                 Text(
-                    "El nombre es obligatorio",
+                    stringResource(R.string.create_product_name_error),
                     color = Color.Red,
                     fontSize = 12.sp,
                     modifier = Modifier.align(Alignment.Start)
@@ -134,13 +137,13 @@ fun CreateProductServiceScreen(
                     description = it
                     if (it.isNotBlank()) descriptionError = false
                 },
-                label = { Text("Descripción") },
+                label = { Text(stringResource(R.string.create_product_description)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = descriptionError
             )
             if (descriptionError) {
                 Text(
-                    "La descripción es obligatoria",
+                    stringResource(R.string.create_product_description_error),
                     color = Color.Red,
                     fontSize = 12.sp,
                     modifier = Modifier.align(Alignment.Start)
@@ -150,9 +153,15 @@ fun CreateProductServiceScreen(
             Spacer(Modifier.height(12.dp))
 
             // ¿Aplica precio?
-            Row(verticalAlignment = Alignment.CenterVertically) { Text("¿Aplica precio?", fontWeight = FontWeight.Bold) }
-            Row(verticalAlignment = Alignment.CenterVertically) { Switch(checked = applyPrice, onCheckedChange = { applyPrice = it }) }
-            Row(verticalAlignment = Alignment.CenterVertically) { Text("En caso de que el producto o servicio tenga un precio, ingreselo (COP)") }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.create_product_apply_price_title), fontWeight = FontWeight.Bold)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(checked = applyPrice, onCheckedChange = { applyPrice = it })
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.create_product_apply_price_hint))
+            }
 
             if (applyPrice) {
                 OutlinedTextField(
@@ -161,14 +170,14 @@ fun CreateProductServiceScreen(
                         price = it
                         if (it.toDoubleOrNull() != null && it.toDouble() > 0) priceError = false
                     },
-                    label = { Text("Precio (COP)") },
+                    label = { Text(stringResource(R.string.create_product_price_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     isError = priceError
                 )
                 if (priceError) {
                     Text(
-                        "Ingresa un precio válido mayor que 0",
+                        stringResource(R.string.create_product_price_error),
                         color = Color.Red,
                         fontSize = 12.sp,
                         modifier = Modifier.align(Alignment.Start)
@@ -182,7 +191,7 @@ fun CreateProductServiceScreen(
                 onClick = { navController.navigate(UserRouteTab.AddImageProductService) },
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                Text("Imágenes")
+                Text(stringResource(R.string.create_product_images))
             }
         }
     }

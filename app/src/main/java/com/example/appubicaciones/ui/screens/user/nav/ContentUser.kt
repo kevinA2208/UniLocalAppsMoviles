@@ -18,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.appubicaciones.R
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.data.mocks.listProductsServices
 import com.example.appubicaciones.data.mocks.approvedPlaces
@@ -79,7 +81,8 @@ fun ContentUser(
                     } else {
                         tabNavController.navigate(UserRouteTab.UserProfile)
                     }
-                }
+                },
+                onSearchClick = { tabNavController.navigate(UserRouteTab.SearchPlaces) }
             )
         }
         composable<UserRouteTab.CreatePlace> { backStackEntry ->
@@ -134,7 +137,7 @@ fun ContentUser(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Debes iniciar sesión para ver tus lugares favoritos.",
+                        text = stringResource(R.string.favorites_need_login),
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray
                     )
@@ -269,7 +272,7 @@ fun ContentUser(
             place?.let {
                 PlaceDetailScreen(
                     place = it,
-                    onViewComments = { /* TODO */ },
+                    onViewComments = { tabNavController.navigate(UserRouteTab.PlaceComments(it.id)) },
                     onViewProducts = { tabNavController.navigate(UserRouteTab.Services) },
                     onDeletePlace = { /* TODO */ }
                 )
@@ -325,7 +328,6 @@ fun ContentUser(
 
             val place = mockPlaces.find { it.id == placeId }
 
-            // Aquí puedes obtener el comentario usando el ID, por ahora un mock:
             val comment = "Comentario de ejemplo $commentId"
 
             place?.let {

@@ -41,11 +41,12 @@ fun BottomBarUser(tabNavController: NavHostController) {
                 selected = isSelected,
                 onClick = {
                     tabNavController.navigate(destination.route) {
-                        launchSingleTop = true
-                        restoreState = true
                         popUpTo(tabNavController.graph.startDestinationId) {
-                            saveState = true
+                            inclusive = false
+                            saveState = false
                         }
+                        launchSingleTop = true
+                        restoreState = false
                     }
                 },
                 icon = {
@@ -74,7 +75,7 @@ enum class Destination(
         Icons.Outlined.FavoriteBorder
     ),
     HOME(
-        UserRouteTab.SearchPlaces,
+        UserRouteTab.Map,
         R.string.nav_home,
         Icons.Filled.LocationOn,
         Icons.Outlined.LocationOn

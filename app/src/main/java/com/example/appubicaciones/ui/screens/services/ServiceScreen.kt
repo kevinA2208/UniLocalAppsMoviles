@@ -31,9 +31,11 @@ import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 import okhttp3.OkHttpClient
 
 @Composable
-
-fun ServiceScreen(navController: NavController, products: List<ProductService>, onViewDetailProduct: () -> Unit = {},) {
-
+fun ServiceScreen(
+    navController: NavController,
+    products: List<ProductService>,
+    onViewDetailProduct: () -> Unit = {},
+) {
     val context = LocalContext.current
     val imageLoader = remember {
         val client = OkHttpClient.Builder()
@@ -56,12 +58,16 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>, 
             .crossfade(true)
             .build()
     }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                    navController.navigate(UserRouteTab.CreateProductService)
-                }) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
+                navController.navigate(UserRouteTab.CreateProductService)
+            }) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.services_add)
+                )
             }
         }
     ) { padding ->
@@ -72,7 +78,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>, 
                 .padding(padding)
         ) {
             Text(
-                text = stringResource(R.string.txt_services),
+                text = stringResource(R.string.services_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
@@ -82,15 +88,12 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>, 
             )
 
             LazyColumn(contentPadding = padding) {
-
                 items(products) { product ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .clickable {
-                                onViewDetailProduct()
-                            }
+                            .clickable { onViewDetailProduct() }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(
@@ -105,7 +108,9 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>, 
                                     .build(),
                                 imageLoader = imageLoader,
                                 contentDescription = product.name,
-                                modifier = Modifier.size(80.dp).padding(4.dp),
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .padding(4.dp),
                                 contentScale = ContentScale.Fit
                             )
                             Text(
@@ -117,10 +122,9 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>, 
                             )
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "Ver detalle",
+                                contentDescription = stringResource(R.string.services_view_detail),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier
-                                    .padding(all = 8.dp)
+                                modifier = Modifier.padding(all = 8.dp)
                             )
                         }
                     }

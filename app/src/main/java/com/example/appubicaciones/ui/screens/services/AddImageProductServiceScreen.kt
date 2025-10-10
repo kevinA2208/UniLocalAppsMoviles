@@ -6,16 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -26,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.appubicaciones.R
 
 @Composable
 fun AddImageProductServiceScreen(navController: NavController) {
@@ -52,18 +45,23 @@ fun AddImageProductServiceScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Guardar imágenes")
+                Text(stringResource(R.string.add_images_save))
             }
         }
     ) { padding ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(padding),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(12.dp))
-            Text("Imágenes seleccionadas: ${images.size}", style = MaterialTheme.typography.labelMedium)
+            Text(
+                text = stringResource(R.string.add_images_selected_count, images.size),
+                style = MaterialTheme.typography.labelMedium
+            )
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -74,7 +72,7 @@ fun AddImageProductServiceScreen(navController: NavController) {
                     if (images.isNotEmpty()) {
                         AsyncImage(
                             model = images[index],
-                            contentDescription = "Imagen ${index + 1}",
+                            contentDescription = stringResource(R.string.add_images_image_description, index + 1),
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
@@ -96,12 +94,12 @@ fun AddImageProductServiceScreen(navController: NavController) {
                 IconButton(
                     enabled = images.isNotEmpty() && index > 0,
                     onClick = { index-- }
-                ) { Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior") }
+                ) { Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.add_images_previous)) }
 
                 IconButton(
                     enabled = images.isNotEmpty() && index < images.lastIndex,
                     onClick = { index++ }
-                ) { Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente") }
+                ) { Icon(Icons.Filled.ArrowForward, contentDescription = stringResource(R.string.add_images_next)) }
             }
 
             Button(
@@ -112,12 +110,12 @@ fun AddImageProductServiceScreen(navController: NavController) {
                 },
                 modifier = Modifier.padding(top = 12.dp)
             ) {
-                Text("Cargar nueva imagen")
+                Text(stringResource(R.string.add_images_load_new))
             }
 
             if (images.isEmpty()) {
                 Text(
-                    "Debes añadir por lo menos una imagen del servicio o producto que ofrece el lugar.",
+                    text = stringResource(R.string.add_images_services_instructions),
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 8.dp)
                 )
