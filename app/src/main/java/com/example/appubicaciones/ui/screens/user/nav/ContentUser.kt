@@ -31,6 +31,7 @@ import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
 import com.example.appubicaciones.ui.screens.user.tabs.PlaceDetailScreen
+import com.example.appubicaciones.ui.screens.user.tabs.SearchPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.ResponseScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserCreatedPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
@@ -213,7 +214,7 @@ fun ContentUser(
             place?.let {
                 PlaceDetailScreen(
                     place = it,
-                    onViewComments = { tabNavController.navigate(UserRouteTab.PlaceComments(it.id)) },
+                    onViewComments = { /* TODO */ },
                     onViewProducts = { tabNavController.navigate(UserRouteTab.Services) },
                     onDeletePlace = { /* TODO */ }
                 )
@@ -223,6 +224,15 @@ fun ContentUser(
             EditUserProfileScreen(
                 onSaveClick = { names, lastnames, username, city ->
                     tabNavController.popBackStack()
+                }
+            )
+        }
+
+        composable<UserRouteTab.SearchPlaces> {
+            SearchPlacesScreen(
+                allPlaces = mockPlaces,
+                onPlaceClick = { place ->
+                    tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
                 }
             )
         }

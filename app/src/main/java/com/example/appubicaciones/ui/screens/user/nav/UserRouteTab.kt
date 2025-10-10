@@ -44,4 +44,8 @@ sealed class UserRouteTab {
 
     @Serializable
     data class CommentResponse(val commentId: Int) : UserRouteTab()
+    @Serializable
+    data object SearchPlaces : UserRouteTab()
+
+
 }

@@ -74,7 +74,7 @@ enum class Destination(
         Icons.Outlined.FavoriteBorder
     ),
     HOME(
-        UserRouteTab.Map,
+        UserRouteTab.SearchPlaces,
         R.string.nav_home,
         Icons.Filled.LocationOn,
         Icons.Outlined.LocationOn
