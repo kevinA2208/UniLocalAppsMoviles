@@ -24,6 +24,12 @@ sealed class UserRouteTab {
     data object Services : UserRouteTab()
 
     @Serializable
+    data object  DetailProductService : UserRouteTab()
+
+    @Serializable
+    data object CreateProductService: UserRouteTab()
+
+    @Serializable
     data object UserCreatedPlaces : UserRouteTab()
 
     @Serializable

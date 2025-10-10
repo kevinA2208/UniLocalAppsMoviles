@@ -61,4 +61,4 @@ val listProductsServices = listOf(
     )
 )
 
-val mockProductServices = listProductsServices
+var mockProductServices = listProductsServices

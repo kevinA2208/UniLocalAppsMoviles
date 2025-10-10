@@ -24,11 +24,11 @@ import com.example.appubicaciones.data.model.ProductService
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 
 @Composable
-fun ServiceScreen(navController: NavController, products: List<ProductService>) {
+fun ServiceScreen(navController: NavController, products: List<ProductService>, onViewDetailProduct: () -> Unit = {},) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                    navController.navigate(UserRouteTab.CreatePlace)
+                    navController.navigate(UserRouteTab.CreateProductService)
                 }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
@@ -58,7 +58,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>) 
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable {
-                                navController.navigate(UserRouteTab.CreatePlace)
+                                onViewDetailProduct()
                             }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {

@@ -3,15 +3,17 @@ package com.example.appubicaciones.ui.screens.user.nav
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appubicaciones.config.RouteScreen
+import com.example.appubicaciones.data.mocks.listProductsServices
 import com.example.appubicaciones.data.mocks.mockPlaces
-import com.example.appubicaciones.data.mocks.mockProductServices
 import com.example.appubicaciones.ui.screens.LoginScreen
+import com.example.appubicaciones.ui.screens.services.CreateProductServiceScreen
+import com.example.appubicaciones.ui.screens.services.DetailProductServiceScreen
 import com.example.appubicaciones.ui.screens.services.ServiceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
@@ -29,6 +31,8 @@ fun ContentUser(
     isLoggedIn: Boolean,
     onLoginSuccess: () -> Unit
 ) {
+
+    var mockProductServices by remember { mutableStateOf(listProductsServices) }
 
     NavHost(
         modifier = Modifier.padding(padding),
@@ -110,8 +114,25 @@ fun ContentUser(
         composable<UserRouteTab.Services> {
             ServiceScreen(
                 navController = tabNavController,
-                products = mockProductServices
+                products = mockProductServices,
+                onViewDetailProduct = { tabNavController.navigate(UserRouteTab.DetailProductService) }
             )
+        }
+
+        composable<UserRouteTab.DetailProductService> {
+            DetailProductServiceScreen(
+                navController = tabNavController,
+                product = mockProductServices.get(0)
+            )
+        }
+
+        composable<UserRouteTab.CreateProductService> {
+            CreateProductServiceScreen(
+                navController = tabNavController
+            ) { nuevo ->
+                /* TODO */
+//                mockProductServices = mockProductServices + nuevo
+            }
         }
 
         composable<UserRouteTab.PlaceDetail> { backStackEntry ->
