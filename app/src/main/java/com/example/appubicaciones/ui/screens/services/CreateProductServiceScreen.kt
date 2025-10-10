@@ -150,11 +150,9 @@ fun CreateProductServiceScreen(
             Spacer(Modifier.height(12.dp))
 
             // ¿Aplica precio?
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("¿Aplica precio?", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.width(8.dp))
-                Switch(checked = applyPrice, onCheckedChange = { applyPrice = it })
-            }
+            Row(verticalAlignment = Alignment.CenterVertically) { Text("¿Aplica precio?", fontWeight = FontWeight.Bold) }
+            Row(verticalAlignment = Alignment.CenterVertically) { Switch(checked = applyPrice, onCheckedChange = { applyPrice = it }) }
+            Row(verticalAlignment = Alignment.CenterVertically) { Text("En caso de que el producto o servicio tenga un precio, ingreselo (COP)") }
 
             if (applyPrice) {
                 OutlinedTextField(
@@ -181,7 +179,7 @@ fun CreateProductServiceScreen(
             Spacer(Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate(UserRouteTab.Services) },
+                onClick = { navController.navigate(UserRouteTab.AddImageProductService) },
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text("Imágenes")

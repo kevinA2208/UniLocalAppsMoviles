@@ -20,6 +20,7 @@ import com.example.appubicaciones.data.model.Days
 import com.example.appubicaciones.data.model.Place
 import com.example.appubicaciones.data.model.PlaceCategory
 import com.example.appubicaciones.ui.screens.comments.PlaceCommentsScreen
+import com.example.appubicaciones.ui.screens.services.AddImageProductServiceScreen
 import com.example.appubicaciones.ui.screens.services.ServiceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CommentDetailScreen
 import com.example.appubicaciones.ui.screens.user.tabs.AddImagesScreen
@@ -224,6 +225,12 @@ fun ContentUser(
             DetailProductServiceScreen(
                 navController = tabNavController,
                 product = mockProductServices.get(0)
+            )
+        }
+
+        composable<UserRouteTab.AddImageProductService> {
+            AddImageProductServiceScreen(
+                navController = tabNavController
             )
         }
 
