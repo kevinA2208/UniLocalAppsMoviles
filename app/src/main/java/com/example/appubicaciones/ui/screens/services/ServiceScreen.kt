@@ -31,7 +31,9 @@ import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 import okhttp3.OkHttpClient
 
 @Composable
-fun ServiceScreen(navController: NavController, products: List<ProductService>) {
+
+fun ServiceScreen(navController: NavController, products: List<ProductService>, onViewDetailProduct: () -> Unit = {},) {
+
     val context = LocalContext.current
     val imageLoader = remember {
         val client = OkHttpClient.Builder()
@@ -87,7 +89,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>) 
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable {
-                                navController.navigate(UserRouteTab.CreatePlace)
+                                onViewDetailProduct()
                             }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
