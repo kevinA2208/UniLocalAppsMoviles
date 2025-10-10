@@ -59,7 +59,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>, 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                    navController.navigate(UserRouteTab.CreatePlace)
+                    navController.navigate(UserRouteTab.CreateProductService)
                 }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }

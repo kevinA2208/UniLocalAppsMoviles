@@ -216,6 +216,7 @@ fun ContentUser(
             ServiceScreen(
                 navController = tabNavController,
                 products = mockProductServices,
+                onViewDetailProduct = { tabNavController.navigate(UserRouteTab.DetailProductService) }
             )
         }
 
