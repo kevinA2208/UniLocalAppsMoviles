@@ -32,6 +32,9 @@ import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 import okhttp3.OkHttpClient
 
 @Composable
+<<<<<<< HEAD
+fun ServiceScreen(navController: NavController, products: List<ProductService>, onViewDetailProduct: () -> Unit = {},) {
+=======
 fun ServiceScreen(navController: NavController, products: List<ProductService>) {
     val context = LocalContext.current
     val imageLoader = remember {
@@ -55,10 +58,11 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>) 
             .crossfade(true)
             .build()
     }
+>>>>>>> 3cf7bf67ccaf6b09fed32abc40bcb3ac9825588a
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                    navController.navigate(UserRouteTab.CreatePlace)
+                    navController.navigate(UserRouteTab.CreateProductService)
                 }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
@@ -88,7 +92,7 @@ fun ServiceScreen(navController: NavController, products: List<ProductService>) 
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable {
-                                navController.navigate(UserRouteTab.CreatePlace)
+                                onViewDetailProduct()
                             }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
