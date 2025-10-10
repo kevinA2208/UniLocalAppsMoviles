@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.data.mocks.mockPlaces
-import com.example.appubicaciones.data.mocks.services
+import com.example.appubicaciones.data.mocks.mockProductServices
 import com.example.appubicaciones.ui.screens.LoginScreen
 import com.example.appubicaciones.ui.screens.services.ServiceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
@@ -110,7 +110,7 @@ fun ContentUser(
         composable<UserRouteTab.Services> {
             ServiceScreen(
                 navController = tabNavController,
-                productos = services
+                products = mockProductServices
             )
         }
 

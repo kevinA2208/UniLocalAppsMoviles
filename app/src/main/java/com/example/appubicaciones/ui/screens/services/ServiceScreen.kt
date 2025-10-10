@@ -20,11 +20,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.appubicaciones.R
-import com.example.appubicaciones.data.model.ProductoServicio
+import com.example.appubicaciones.data.model.ProductService
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 
 @Composable
-fun ServiceScreen(navController: NavController, productos: List<ProductoServicio>) {
+fun ServiceScreen(navController: NavController, products: List<ProductService>) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -52,7 +52,7 @@ fun ServiceScreen(navController: NavController, productos: List<ProductoServicio
 
             LazyColumn(contentPadding = padding) {
 
-                items(productos) { producto ->
+                items(products) { product ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -63,15 +63,15 @@ fun ServiceScreen(navController: NavController, productos: List<ProductoServicio
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(
-                                model = producto.imagenes.first(),
-                                contentDescription = producto.nombre,
+                                model = product.images.first(),
+                                contentDescription = product.name,
                                 modifier = Modifier
                                     .size(80.dp)
                                     .padding(4.dp),
                                 contentScale = ContentScale.Crop
                             )
                             Text(
-                                text = producto.nombre,
+                                text = product.name,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .weight(1f)
