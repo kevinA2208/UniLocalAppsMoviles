@@ -1,24 +1,38 @@
 package com.example.appubicaciones.ui.screens.user.tabs
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.Days
 import com.example.appubicaciones.data.model.PlaceCategory
 import com.example.appubicaciones.ui.screens.generics.DropdownSelector
-import com.example.appubicaciones.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreatePlaceScreen(
+    initialAddress: String = "",
+    pickedImages: List<Uri> = emptyList(),
+    onAddImagesClick: () -> Unit,
     onSaveClick: (
         name: String,
         description: String,
@@ -29,7 +43,8 @@ fun CreatePlaceScreen(
         phones: String,
         category: PlaceCategory,
         address: String
-    ) -> Unit
+    ) -> Unit,
+    onLoadLocationClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -44,6 +59,28 @@ fun CreatePlaceScreen(
     var dayTo by remember { mutableStateOf(Days.SUNDAY) }
     var category by remember { mutableStateOf(PlaceCategory.FOOD) }
 
+    val selectedImages = remember { mutableStateListOf<Uri>() }
+    val maxImages = 6
+
+    val pickImages = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxImages)
+    ) { uris ->
+        selectedImages.clear()
+        selectedImages.addAll(uris.take(maxImages))
+    }
+
+
+    LaunchedEffect(initialAddress) {
+        if (initialAddress.isNotBlank()) address = initialAddress
+    }
+    if (pickedImages.isNotEmpty()) {
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = "Imágenes seleccionadas: ${pickedImages.size}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,12 +88,10 @@ fun CreatePlaceScreen(
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(stringResource(R.string.create_place_title), style = MaterialTheme.typography.titleMedium)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
-        // Nombre
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -64,7 +99,6 @@ fun CreatePlaceScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Descripción
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
@@ -73,20 +107,12 @@ fun CreatePlaceScreen(
             maxLines = 4
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.create_place_schedule_label))
+        Spacer(Modifier.height(8.dp))
 
-        Text(
-            stringResource(R.string.create_place_schedule_label)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Horario - Desde y Hasta
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Box(Modifier.weight(1f)) {
                 DropdownSelector(
                     label = stringResource(R.string.create_place_from_day),
                     options = Days.entries,
@@ -95,8 +121,7 @@ fun CreatePlaceScreen(
                     getOptionLabel = { it.displayName }
                 )
             }
-
-            Box(modifier = Modifier.weight(1f)) {
+            Box(Modifier.weight(1f)) {
                 DropdownSelector(
                     label = stringResource(R.string.create_place_to_day),
                     options = Days.entries,
@@ -107,8 +132,7 @@ fun CreatePlaceScreen(
             }
         }
 
-        // Horas de apertura y cierre
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedTextField(
                 value = openHour,
                 onValueChange = { openHour = it },
@@ -123,7 +147,6 @@ fun CreatePlaceScreen(
             )
         }
 
-        // Teléfono
         OutlinedTextField(
             value = phones,
             onValueChange = { phones = it },
@@ -131,9 +154,8 @@ fun CreatePlaceScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Categoría
         DropdownSelector(
             label = stringResource(R.string.create_place_category),
             options = PlaceCategory.entries,
@@ -142,7 +164,6 @@ fun CreatePlaceScreen(
             getOptionLabel = { it.displayName }
         )
 
-        // Dirección
         OutlinedTextField(
             value = address,
             onValueChange = { address = it },
@@ -150,51 +171,75 @@ fun CreatePlaceScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
-        // Botones de acciones adicionales (Imágenes y Cargar ubicación)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                onClick = { /* Acción para abrir selector de imágenes */ },
+                onClick = onAddImagesClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2D9FF)),
                 shape = MaterialTheme.shapes.large,
                 modifier = Modifier
                     .weight(1f)
                     .height(45.dp)
             ) {
-                Text(
-                    text = "Imágenes",
-                    color = Color(0xFF5E35B1),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Text("Imágenes", color = Color(0xFF5E35B1), style = MaterialTheme.typography.bodyMedium)
             }
 
             OutlinedButton(
-                onClick = { /* Acción para cargar ubicación */ },
-                border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp, brush = SolidColor(
-                    Color(0xFF5E35B1)
-                )
-                ),
+                onClick = onLoadLocationClick,
+                border = BorderStroke(1.dp, Color(0xFF5E35B1)),
                 shape = MaterialTheme.shapes.large,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(45.dp)
-            ) {
-                Text(
-                    text = "Cargar ubicación",
-                    color = Color(0xFF5E35B1),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+                modifier = Modifier.weight(1f).height(45.dp)
+            ) { Text("Cargar ubicación", color = Color(0xFF5E35B1), style = MaterialTheme.typography.bodyMedium) }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (selectedImages.isNotEmpty()) {
+            Spacer(Modifier.height(12.dp))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 3,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                selectedImages.forEachIndexed { index, uri ->
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    ) {
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = "Imagen $index",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.matchParentSize()
+                        )
+                        IconButton(
+                            onClick = { selectedImages.remove(uri) },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Eliminar",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            AssistChip(
+                onClick = { selectedImages.clear() },
+                label = { Text("Quitar todas") }
+            )
+        }
+        Spacer(Modifier.height(16.dp))
 
-        // Botón guardar
         Button(
             onClick = {
                 onSaveClick(

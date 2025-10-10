@@ -85,4 +85,29 @@
     <string name="txt_detail_product_services">Detalle de producto / Servicios</string>
     <string name="txt_create_product_services">Crear producto / Servicios</string>
 
+    <!-- Comentarios de Lugar -->
+    <string name="place_comments_title">Comentarios de Lugar</string>
+    <string name="place_comments_place_label">Lugar:</string>
+    <string name="place_comments_user">Nombre usuario</string>
+    <string name="place_comments_comment">Comentario</string>
+    <string name="place_comments_view_comment">Ver comentario</string>
+
+    <!-- Detalle de Comentario -->
+    <string name="comment_detail_title">Detalle de Comentario</string>
+    <string name="comment_detail_responses">Respuestas</string>
+    <string name="comment_detail_reply_button">Responder</string>
+    <string name="comment_detail_default_place">Lugar 1</string>
+    <string name="comment_detail_default_user">Nombre de Usuario</string>
+    <string name="comment_detail_default_comment">Comentario</string>
+    <string name="comment_detail_default_response">Respuesta</string>
+
+    <!-- Formulario de respuesta -->
+    <string name="response_form_title">Escribe tu respuesta</string>
+    <string name="response_form_placeholder">Escribe algo...</string>
+    <string name="response_form_cancel">Cancelar</string>
+    <string name="response_form_send">Enviar</string>
+
+    <!-- Pantalla de respuesta -->
+    <string name="response_screen_title">Responder comentario</string>
+
 </resources>
