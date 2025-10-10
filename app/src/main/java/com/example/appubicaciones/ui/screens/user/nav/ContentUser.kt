@@ -14,11 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.data.model.ProductoServicio
+import com.example.appubicaciones.data.mocks.mockPlaces
 import com.example.appubicaciones.ui.screens.LoginScreen
 import com.example.appubicaciones.ui.screens.ServiceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
+import com.example.appubicaciones.ui.screens.user.tabs.PlaceDetailScreen
+import com.example.appubicaciones.ui.screens.user.tabs.UserCreatedPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserProfileScreen
 
@@ -117,7 +120,9 @@ fun ContentUser(
             if(isLoggedIn){
                 UserProfileScreen(
                     tabNavController = tabNavController,
-                    onEditClick = { tabNavController.navigate(UserRouteTab.EditProfile) }
+                    onEditClick = { tabNavController.navigate(UserRouteTab.EditProfile) },
+                    onRecoverPasswordClick = { rootNavController.navigate(RouteScreen.RecoverPassword) },
+                    onHistoryClick = { tabNavController.navigate(UserRouteTab.UserCreatedPlaces) }
                 )
             } else {
                 LoginScreen(
@@ -125,17 +130,31 @@ fun ContentUser(
                         rootNavController.navigate(RouteScreen.Register)
                     },
                     onLoginClick = { email, password ->
-                        if (email == "admin@gmail.com" && password == "12345") {
+                        if (email == "usuario@gmail.com" && password == "12345") {
                             onLoginSuccess()
                             tabNavController.navigate(UserRouteTab.UserProfile) {
                                 popUpTo(UserRouteTab.UserProfile) { inclusive = true }
                             }
+                            true
                         } else {
                             Log.d("LoginScreen", "Credenciales incorrectas")
+                            false
                         }
+                    },
+                    onRecoverPasswordClick = {
+                        rootNavController.navigate(RouteScreen.RecoverPassword)
                     }
                 )
             }
+        }
+
+        composable<UserRouteTab.UserCreatedPlaces> {
+            UserCreatedPlacesScreen(
+                places = mockPlaces,
+                onPlaceClick = { place ->
+                    tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
+                }
+            )
         }
 
         composable<UserRouteTab.EditProfile> {
@@ -159,6 +178,23 @@ fun ContentUser(
                 navController = tabNavController,
                 productos = productos
             )
+        }
+
+        composable<UserRouteTab.PlaceDetail> { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getInt("placeId")
+                ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
+                ?: return@composable
+
+            val place = mockPlaces.find { it.id == placeId }
+
+            place?.let {
+                PlaceDetailScreen(
+                    place = it,
+                    onViewComments = { /* TODO */ },
+                    onViewProducts = { /* TODO */ },
+                    onDeletePlace = { /* TODO */ }
+                )
+            }
         }
     }
 }

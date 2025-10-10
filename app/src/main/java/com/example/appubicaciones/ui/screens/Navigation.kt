@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.ui.screens.user.HomeUserScreen
+import com.example.appubicaciones.ui.screens.user.tabs.RecoverPasswordScreen
 
 @Composable
 fun Navigation() {
@@ -30,14 +31,18 @@ fun Navigation() {
                     navController.navigate(RouteScreen.Register)
                 },
                 onLoginClick = { email, password ->
-                    if (email == "admin@gmail.com" && password == "12345") {
+                    if (email == "usuario@gmail.com" && password == "12345") {
                         isLoggedIn = true
                         navController.navigate(RouteScreen.Home) {
                             popUpTo(RouteScreen.Login) { inclusive = true }
                         }
+                        true
                     } else {
-                        Log.d("LoginScreen", "Credenciales incorrectas")
+                        false
                     }
+                },
+                onRecoverPasswordClick = {
+                    navController.navigate(RouteScreen.RecoverPassword)
                 }
             )
         }
@@ -61,6 +66,17 @@ fun Navigation() {
                 isLoggedIn = isLoggedIn,
                 onLoginSuccess = { isLoggedIn = true },
                 rootNavController = navController
+            )
+        }
+
+        composable<RouteScreen.RecoverPassword> {
+            RecoverPasswordScreen(
+                onSubmitClick = { newPassword, otp ->
+                    navController.popBackStack()
+                },
+                onResendClick = {
+                    // Lógica para reenviar OTP
+                }
             )
         }
     }

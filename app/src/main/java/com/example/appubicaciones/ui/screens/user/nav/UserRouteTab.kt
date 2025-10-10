@@ -22,4 +22,10 @@ sealed class UserRouteTab {
 
     @Serializable
     data object Services : UserRouteTab()
+
+    @Serializable
+    data object UserCreatedPlaces : UserRouteTab()
+
+    @Serializable
+    data class PlaceDetail(val placeId: Int) : UserRouteTab()
 }
