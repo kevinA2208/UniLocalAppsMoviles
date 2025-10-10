@@ -12,11 +12,14 @@ import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.data.mocks.mockPlaces
 import com.example.appubicaciones.data.mocks.mockProductServices
 import com.example.appubicaciones.ui.screens.LoginScreen
+import com.example.appubicaciones.ui.screens.comments.PlaceCommentsScreen
 import com.example.appubicaciones.ui.screens.services.ServiceScreen
+import com.example.appubicaciones.ui.screens.user.tabs.CommentDetailScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
 import com.example.appubicaciones.ui.screens.user.tabs.PlaceDetailScreen
+import com.example.appubicaciones.ui.screens.user.tabs.ResponseScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserCreatedPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserProfileScreen
@@ -124,11 +127,72 @@ fun ContentUser(
             place?.let {
                 PlaceDetailScreen(
                     place = it,
-                    onViewComments = { /* TODO */ },
+                    onViewComments = { tabNavController.navigate(UserRouteTab.PlaceComments(it.id)) },
                     onViewProducts = { tabNavController.navigate(UserRouteTab.Services) },
                     onDeletePlace = { /* TODO */ }
                 )
             }
+        }
+
+        composable<UserRouteTab.PlaceComments> { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getInt("placeId")
+                ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
+                ?: return@composable
+
+            val place = mockPlaces.find { it.id == placeId }
+
+            place?.let {
+                PlaceCommentsScreen(
+                    placeName = it.name,
+                    comments = listOf(
+                        "Kevin" to "Excelente lugar",
+                        "Ana" to "Muy buena atención",
+                        "Carlos" to "Volvería sin dudarlo"
+                    ),
+                    onCommentClick = { commentIndex ->
+                        tabNavController.navigate(UserRouteTab.CommentDetail(it.id, commentIndex))
+                    }
+                )
+            }
+        }
+
+        composable<UserRouteTab.CommentDetail> { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getInt("placeId")
+                ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
+                ?: return@composable
+
+            val commentId = backStackEntry.arguments?.getInt("commentId")
+                ?: backStackEntry.destination.arguments["commentId"]?.defaultValue as? Int
+                ?: return@composable
+
+            val place = mockPlaces.find { it.id == placeId }
+
+            // Aquí puedes obtener el comentario usando el ID, por ahora un mock:
+            val comment = "Comentario de ejemplo $commentId"
+
+            place?.let {
+                CommentDetailScreen(
+                    placeName = it.name,
+                    userName = "Usuario Ejemplo",
+                    comment = comment,
+                    responses = listOf(
+                        "Ana" to "Totalmente de acuerdo",
+                        "Carlos" to "Buen comentario"
+                    ),
+                    onRespondClick = { tabNavController.navigate(UserRouteTab.CommentResponse(commentId)) }
+                )
+            }
+        }
+
+        composable<UserRouteTab.CommentResponse> { backStackEntry ->
+            val commentId = backStackEntry.arguments?.getInt("commentId")
+                ?: backStackEntry.destination.arguments["commentId"]?.defaultValue as? Int
+                ?: return@composable
+
+            ResponseScreen(
+                navController = tabNavController,
+                commentId = commentId
+            )
         }
     }
 }
