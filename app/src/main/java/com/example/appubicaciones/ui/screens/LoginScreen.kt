@@ -53,7 +53,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Campo correo
             OutlinedTextField(
                 value = email,
                 isError = isEmailError,
@@ -74,7 +73,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo contraseña
             OutlinedTextField(
                 value = password,
                 isError = isPasswordError,
@@ -105,7 +103,6 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Botón Login
             Button(
                 onClick = {
                     val success = onLoginClick(email, password)
@@ -123,7 +120,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Otras acciones
             TextButton(onClick = onRegisterClick) {
                 Text(stringResource(R.string.txt_register))
             }

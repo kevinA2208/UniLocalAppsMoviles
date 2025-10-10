@@ -28,4 +28,11 @@ sealed class UserRouteTab {
 
     @Serializable
     data class PlaceDetail(val placeId: Int) : UserRouteTab()
+
+    @Serializable
+    data object AddLocation : UserRouteTab()
+
+    @Serializable
+    data object AddImages : UserRouteTab()
+
 }

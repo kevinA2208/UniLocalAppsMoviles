@@ -31,7 +31,6 @@ fun UserCreatedPlacesScreen(
 
     var showPending by remember { mutableStateOf(false) }
 
-    // Filtra según el botón activo
     val filteredPlaces = places.filter { it.verification_completed == showPending }
 
     Column(
