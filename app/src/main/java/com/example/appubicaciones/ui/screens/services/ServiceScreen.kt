@@ -1,4 +1,4 @@
-package com.example.appubicaciones.ui.screens
+package com.example.appubicaciones.ui.screens.services
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,7 +28,6 @@ fun ServiceScreen(navController: NavController, productos: List<ProductoServicio
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-//                    navController.navigate(RouteScreen.FormProducto.ruta)
                     navController.navigate(UserRouteTab.CreatePlace)
                 }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
@@ -39,7 +38,7 @@ fun ServiceScreen(navController: NavController, productos: List<ProductoServicio
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding) // 👈 Aplica el padding del Scaffold aquí
+                .padding(padding)
         ) {
             Text(
                 text = stringResource(R.string.txt_services),
@@ -59,7 +58,6 @@ fun ServiceScreen(navController: NavController, productos: List<ProductoServicio
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable {
-//                            navController.navigate(Rutas.DetalleProducto.crearRuta(producto.id))
                                 navController.navigate(UserRouteTab.CreatePlace)
                             }
                     ) {

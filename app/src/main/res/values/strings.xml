@@ -12,7 +12,6 @@
     <string name="txt_lastname">Apellidos</string>
     <string name="txt_username">Username</string>
     <string name="txt_user_city">Ciudad de Residencia</string>
-    <string name="txt_services">Servicios</string>
 
     <!-- Errores -->
     <string name="error_email">El correo electrónico es obligatorio y debe ser válido</string>
@@ -81,5 +80,7 @@
     <string name="place_detail_category">Categoria: %1$s</string>
     <string name="place_detail_address">Dirección: %1$s</string>
 
+    <!-- Servicios -->
+    <string name="txt_services">Productos / Servicios</string>
 
 </resources>
