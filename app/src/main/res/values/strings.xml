@@ -108,4 +108,39 @@
     <!-- Pantalla de respuesta -->
     <string name="response_screen_title">Responder comentario</string>
 
+    <!-- Favoritos del usuario -->
+    <string name="favorites_title">Historial de lugares guardados</string>
+    <string name="favorites_empty_message">Aún no tienes lugares guardados.</string>
+    <string name="favorites_remove">Quitar de favoritos</string>
+    <string name="favorites_add">Agregar a favoritos</string>
+    <string name="favorites_expand">Expandir</string>
+    <string name="favorites_collapse">Contraer</string>
+    <string name="favorites_description">Descripción</string>
+    <string name="favorites_no_description">Sin descripción</string>
+    <string name="favorites_phone">Teléfono</string>
+    <string name="favorites_category">Categoría</string>
+    <string name="favorites_open">Abre</string>
+    <string name="favorites_close">Cierra</string>
+    <string name="favorites_see_more">Ver más</string>
+
+    <!-- Pantalla: Añadir imágenes -->
+    <string name="add_images_title">Añadir imágenes del lugar</string>
+    <string name="add_images_back">Volver</string>
+    <string name="add_images_selected_count">Imágenes seleccionadas: %1$d</string>
+    <string name="add_images_previous">Anterior</string>
+    <string name="add_images_next">Siguiente</string>
+    <string name="add_images_load_new">Cargar nueva imagen</string>
+    <string name="add_images_instructions">
+        Para la aprobación del lugar en UniLocal,
+        deberá añadir mínimo 1 imagen.
+    </string>
+    <string name="add_images_save">Guardar imágenes</string>
+    <string name="add_images_image_description">Imagen %1$d</string>
+
+    <!-- Pantalla: Añadir ubicación -->
+    <string name="add_location_app_name">UniLocal</string>
+    <string name="add_location_title">Añadir ubicación del lugar</string>
+    <string name="add_location_label_address">Dirección:</string>
+    <string name="add_location_save_button">Guardar ubicación</string>
+
 </resources>

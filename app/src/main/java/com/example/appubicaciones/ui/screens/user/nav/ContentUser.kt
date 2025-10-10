@@ -2,20 +2,28 @@ package com.example.appubicaciones.ui.screens.user.nav
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appubicaciones.config.RouteScreen
+import com.example.appubicaciones.data.mocks.approvedPlaces
 import com.example.appubicaciones.data.mocks.mockPlaces
 import com.example.appubicaciones.data.mocks.mockProductServices
 import com.example.appubicaciones.data.model.Days
@@ -105,36 +113,37 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.Favorites> {
-            val places = remember {
-                listOf(
-                    Place(
-                        1,
-                        "Café Central",
-                        "Café y pastelería",
-                        Days.MONDAY,
-                        Days.SUNDAY,
-                        "08:00",
-                        "20:00",
-                        "+57 300 000 0000",
-                        PlaceCategory.FOOD,
-                        "Cra 12 #34-56"
-                    ),
-                    Place(2, "Parque La Vida", "Zona verde", Days.MONDAY, Days.SUNDAY, "06:00","19:00","N/A", PlaceCategory.PARK, "Av. Principal 45"),
-                    Place(3, "Museo Regional", "Arte e historia", Days.TUESDAY, Days.SATURDAY, "10:00","18:00","+57 606 000 0000", PlaceCategory.MUSEUM, "Cll 10 #20-10")
+            val places = remember { approvedPlaces }
+
+            val favs = remember { mutableStateMapOf<Int, Boolean>().apply {
+                places.forEach { put(it.id, true) }
+            }}
+
+            if (!isLoggedIn) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Debes iniciar sesión para ver tus lugares favoritos.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                UserFavoritesScreen(
+                    places = places,
+                    isLoggedIn = isLoggedIn,
+                    onPlaceClick = { place ->
+                        tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
+                    },
+                    onToggleFavorite = { place, isFav ->
+                        favs[place.id] = isFav
+                    }
                 )
             }
-
-            val favs = remember { mutableStateMapOf<Int, Boolean>().apply { places.forEach { put(it.id, true) } } }
-
-            UserFavoritesScreen(
-                places = places,
-                isLoggedIn = isLoggedIn,
-                onPlaceClick = { place ->
-                },
-                onToggleFavorite = { place, isFav ->
-                    favs[place.id] = isFav
-                }
-            )
         }
 
         composable<UserRouteTab.AddImages> {
@@ -179,7 +188,8 @@ fun ContentUser(
                     onLoginClick = { email, password ->
                         if (email == "usuario@gmail.com" && password == "12345") {
                             onLoginSuccess()
-                            tabNavController.navigate(UserRouteTab.UserProfile) {
+
+                            tabNavController.navigate(UserRouteTab.Map) {
                                 popUpTo(UserRouteTab.UserProfile) { inclusive = true }
                             }
                             true

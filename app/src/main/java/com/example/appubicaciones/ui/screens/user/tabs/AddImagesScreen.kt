@@ -17,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.appubicaciones.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,10 +44,13 @@ fun AddImagesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Añadir imágenes del lugar") },
+                title = { Text(stringResource(R.string.add_images_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.add_images_back)
+                        )
                     }
                 }
             )
@@ -59,7 +64,14 @@ fun AddImagesScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(12.dp))
-            Text("Imágenes seleccionadas: ${images.size}", style = MaterialTheme.typography.labelMedium)
+
+            // Conteo de imágenes seleccionadas
+            Text(
+                text = stringResource(R.string.add_images_selected_count, images.size),
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            // Vista previa de la imagen seleccionada
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -70,7 +82,10 @@ fun AddImagesScreen(
                     if (images.isNotEmpty()) {
                         AsyncImage(
                             model = images[index],
-                            contentDescription = "Imagen ${index + 1}",
+                            contentDescription = stringResource(
+                                R.string.add_images_image_description,
+                                index + 1
+                            ),
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
@@ -83,6 +98,7 @@ fun AddImagesScreen(
                 }
             }
 
+            // Navegación entre imágenes
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -92,16 +108,27 @@ fun AddImagesScreen(
                 IconButton(
                     enabled = images.isNotEmpty() && index > 0,
                     onClick = { index-- }
-                ) { Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior") }
+                ) {
+                    Icon(
+                        Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.add_images_previous)
+                    )
+                }
 
                 IconButton(
                     enabled = images.isNotEmpty() && index < images.lastIndex,
                     onClick = { index++ }
-                ) { Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente") }
+                ) {
+                    Icon(
+                        Icons.Filled.ArrowForward,
+                        contentDescription = stringResource(R.string.add_images_next)
+                    )
+                }
             }
 
             Spacer(Modifier.height(8.dp))
 
+            // Botón para añadir nueva imagen
             OutlinedButton(
                 onClick = {
                     pickImage.launch(
@@ -110,28 +137,29 @@ fun AddImagesScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Cargar nueva imagen")
+                Text(stringResource(R.string.add_images_load_new))
             }
 
             Spacer(Modifier.height(8.dp))
 
+            // Texto informativo
             Text(
-                "Para la aprobación del lugar en UniLocal,\n" +
-                        "deberá añadir mínimo 1 imagen.",
+                stringResource(R.string.add_images_instructions),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(16.dp))
 
+            // Botón para guardar
             Button(
                 onClick = { onSaveImages(images) },
                 enabled = images.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF61C38A)),
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Guardar imágenes") }
+            ) {
+                Text(stringResource(R.string.add_images_save))
+            }
         }
     }
-
-
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -22,9 +21,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.Days
 import com.example.appubicaciones.data.model.Place
 import com.example.appubicaciones.data.model.PlaceCategory
@@ -48,16 +49,9 @@ fun UserFavoritesScreen(
             .background(Color(0xFFF2F2F2))
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
+        // Título principal
         Text(
-            text = "UniLocal",
-            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.SemiBold),
-            color = Color(0xFF6A1B9A),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp)
-        )
-        Text(
-            text = "Historial de lugares guardados",
+            text = stringResource(R.string.favorites_title),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.DarkGray,
             modifier = Modifier
@@ -77,7 +71,10 @@ fun UserFavoritesScreen(
                         .padding(20.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Aún no tienes lugares guardados.", color = Color.Gray)
+                    Text(
+                        text = stringResource(R.string.favorites_empty_message),
+                        color = Color.Gray
+                    )
                 }
             } else {
                 LazyColumn(
@@ -153,7 +150,9 @@ private fun FavoriteItemCard(
                 IconButton(onClick = { onToggleFavorite(!isFavorite) }) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                        contentDescription = if (isFavorite) "Quitar de favoritos" else "Agregar a favoritos",
+                        contentDescription = stringResource(
+                            if (isFavorite) R.string.favorites_remove else R.string.favorites_add
+                        ),
                         tint = favColor
                     )
                 }
@@ -162,7 +161,9 @@ private fun FavoriteItemCard(
             IconButton(onClick = onToggleExpand) {
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expanded) "Contraer" else "Expandir",
+                    contentDescription = stringResource(
+                        if (expanded) R.string.favorites_collapse else R.string.favorites_expand
+                    ),
                     tint = Color(0xFF7237EC)
                 )
             }
@@ -171,24 +172,30 @@ private fun FavoriteItemCard(
         AnimatedVisibility(
             visible = expanded,
             enter = fadeIn() + expandVertically(),
-            exit  = fadeOut() + shrinkVertically()
+            exit = fadeOut() + shrinkVertically()
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
-                DetailRow("Descripción", place.description.ifBlank { "Sin descripción" })
-                DetailRow("Teléfono", place.phone)
-                DetailRow("Categoría", place.category.displayName)
-                DetailRow("Abre", "${place.openDay.displayName} ${place.openingHour}")
-                DetailRow("Cierra", "${place.closeDay.displayName} ${place.closingHour}")
+                DetailRow(
+                    stringResource(R.string.favorites_description),
+                    place.description.ifBlank { stringResource(R.string.favorites_no_description) }
+                )
+                DetailRow(stringResource(R.string.favorites_phone), place.phone)
+                DetailRow(stringResource(R.string.favorites_category), place.category.displayName)
+                DetailRow(stringResource(R.string.favorites_open), "${place.openDay.displayName} ${place.openingHour}")
+                DetailRow(stringResource(R.string.favorites_close), "${place.closeDay.displayName} ${place.closingHour}")
 
                 TextButton(
                     onClick = onRowClick,
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("Ver más", color = Color(0xFF7237EC))
+                    Text(
+                        text = stringResource(R.string.favorites_see_more),
+                        color = Color(0xFF7237EC)
+                    )
                 }
             }
         }
@@ -209,9 +216,7 @@ private fun PreviewFavorites() {
     val mock = listOf(
         Place(1, "Lugar 1","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.PARK,"Dirección 1"),
         Place(2, "Lugar 2","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.FOOD,"Dirección 2"),
-        Place(3, "Lugar 3","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.MUSEUM,"Dirección 3"),
-        Place(4, "Lugar 4","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.HOTEL,"Dirección 4"),
-        Place(5, "Lugar 5","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.SHOPPING,"Dirección 5")
+        Place(3, "Lugar 3","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.MUSEUM,"Dirección 3")
     )
     UserFavoritesScreen(places = mock, isLoggedIn = true)
 }
