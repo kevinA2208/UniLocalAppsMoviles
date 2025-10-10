@@ -1,18 +1,30 @@
 package com.example.appubicaciones.ui.screens.user.nav
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.data.mocks.mockPlaces
 import com.example.appubicaciones.data.mocks.mockProductServices
+import com.example.appubicaciones.data.model.Days
+import com.example.appubicaciones.data.model.Place
+import com.example.appubicaciones.data.model.PlaceCategory
 import com.example.appubicaciones.ui.screens.LoginScreen
 import com.example.appubicaciones.ui.screens.services.ServiceScreen
+import com.example.appubicaciones.ui.screens.user.tabs.AddImagesScreen
+import com.example.appubicaciones.ui.screens.user.tabs.AddLocationScreen
 import com.example.appubicaciones.ui.screens.user.tabs.CreatePlaceScreen
 import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
@@ -27,8 +39,14 @@ fun ContentUser(
     tabNavController: NavHostController,
     rootNavController: NavHostController,
     isLoggedIn: Boolean,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    openCreate: Boolean = false
 ) {
+    LaunchedEffect(openCreate, isLoggedIn) {
+        if (openCreate && isLoggedIn) {
+            tabNavController.navigate(UserRouteTab.CreatePlace)
+        }
+    }
 
     NavHost(
         modifier = Modifier.padding(padding),
@@ -46,11 +64,103 @@ fun ContentUser(
                 }
             )
         }
-        composable<UserRouteTab.Favorites> {
-            UserFavoritesScreen()
-        }
-        composable<UserRouteTab.UserProfile> {
+        composable<UserRouteTab.CreatePlace> { backStackEntry ->
+            val imgsFlow = backStackEntry
+                .savedStateHandle
+                .getStateFlow("picked_images", emptyList<String>())
+            val pickedImageStrings by imgsFlow.collectAsStateWithLifecycle()
+            val pickedUris = remember(pickedImageStrings) { pickedImageStrings.map(Uri::parse) }
 
+            val addrFlow = backStackEntry
+                .savedStateHandle
+                .getStateFlow("picked_address", "")
+            val addr by addrFlow.collectAsStateWithLifecycle()
+
+            CreatePlaceScreen(
+                initialAddress = addr,
+                pickedImages = pickedUris,
+                onAddImagesClick = { tabNavController.navigate(UserRouteTab.AddImages) },
+                onLoadLocationClick = { tabNavController.navigate(UserRouteTab.AddLocation) },
+                onSaveClick = { name, description, dayFrom, dayTo, openHour, closeHour, phones, category, address ->
+                    tabNavController.popBackStack()
+                }
+            )
+        }
+
+        composable<UserRouteTab.AddLocation> {
+            AddLocationScreen(
+                initialAddress = "",
+                onSaveLocation = { newAddress ->
+                    tabNavController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("picked_address", newAddress)
+
+                    tabNavController.popBackStack()
+                },
+                onBack = { tabNavController.popBackStack() }
+            )
+        }
+
+        composable<UserRouteTab.Favorites> {
+            val places = remember {
+                listOf(
+                    Place(
+                        1,
+                        "Café Central",
+                        "Café y pastelería",
+                        Days.MONDAY,
+                        Days.SUNDAY,
+                        "08:00",
+                        "20:00",
+                        "+57 300 000 0000",
+                        PlaceCategory.FOOD,
+                        "Cra 12 #34-56"
+                    ),
+                    Place(2, "Parque La Vida", "Zona verde", Days.MONDAY, Days.SUNDAY, "06:00","19:00","N/A", PlaceCategory.PARK, "Av. Principal 45"),
+                    Place(3, "Museo Regional", "Arte e historia", Days.TUESDAY, Days.SATURDAY, "10:00","18:00","+57 606 000 0000", PlaceCategory.MUSEUM, "Cll 10 #20-10")
+                )
+            }
+
+            val favs = remember { mutableStateMapOf<Int, Boolean>().apply { places.forEach { put(it.id, true) } } }
+
+            UserFavoritesScreen(
+                places = places,
+                isLoggedIn = isLoggedIn,
+                onPlaceClick = { place ->
+                },
+                onToggleFavorite = { place, isFav ->
+                    favs[place.id] = isFav
+                }
+            )
+        }
+
+        composable<UserRouteTab.AddImages> {
+            val prevStrings = tabNavController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<List<String>>("picked_images")
+                ?: emptyList()
+            val prevUris = prevStrings.map(Uri::parse)
+
+            AddImagesScreen(
+                initialImages = prevUris,
+                onSaveImages = { uris ->
+                    tabNavController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("picked_images", uris.map { it.toString() })
+                    tabNavController.popBackStack()
+                },
+                onBack = { tabNavController.popBackStack() }
+            )
+
+        }
+        composable<UserRouteTab.Services> {
+            ServiceScreen(
+                navController = tabNavController,
+                products = mockProductServices
+            )
+        }
+
+        composable<UserRouteTab.UserProfile> {
             if(isLoggedIn){
                 UserProfileScreen(
                     tabNavController = tabNavController,
@@ -90,30 +200,6 @@ fun ContentUser(
                 }
             )
         }
-
-        composable<UserRouteTab.EditProfile> {
-            EditUserProfileScreen(
-                onSaveClick = { names, lastnames, username, city ->
-                    tabNavController.popBackStack()
-                }
-            )
-        }
-
-        composable <UserRouteTab.CreatePlace> {
-            CreatePlaceScreen(
-                onSaveClick = { name, description, dayFrom, dayTo, openHour, closeHour, phones, category, address ->
-                    tabNavController.popBackStack()
-                }
-            )
-        }
-
-        composable<UserRouteTab.Services> {
-            ServiceScreen(
-                navController = tabNavController,
-                products = mockProductServices
-            )
-        }
-
         composable<UserRouteTab.PlaceDetail> { backStackEntry ->
             val placeId = backStackEntry.arguments?.getInt("placeId")
                 ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
@@ -129,6 +215,13 @@ fun ContentUser(
                     onDeletePlace = { /* TODO */ }
                 )
             }
+        }
+        composable<UserRouteTab.EditProfile> {
+            EditUserProfileScreen(
+                onSaveClick = { names, lastnames, username, city ->
+                    tabNavController.popBackStack()
+                }
+            )
         }
     }
 }

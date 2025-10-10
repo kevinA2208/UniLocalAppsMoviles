@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.toRoute
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.ui.screens.user.HomeUserScreen
 import com.example.appubicaciones.ui.screens.user.tabs.RecoverPasswordScreen
@@ -22,7 +24,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = RouteScreen.Home,
+        startDestination = RouteScreen.Home(),
         modifier = Modifier
     ) {
         composable<RouteScreen.Login> {
@@ -33,13 +35,11 @@ fun Navigation() {
                 onLoginClick = { email, password ->
                     if (email == "usuario@gmail.com" && password == "12345") {
                         isLoggedIn = true
-                        navController.navigate(RouteScreen.Home) {
+                        navController.navigate(RouteScreen.Home(openCreate = true)) {
                             popUpTo(RouteScreen.Login) { inclusive = true }
                         }
                         true
-                    } else {
-                        false
-                    }
+                    } else false
                 },
                 onRecoverPasswordClick = {
                     navController.navigate(RouteScreen.RecoverPassword)
@@ -61,13 +61,17 @@ fun Navigation() {
             )
         }
 
-        composable<RouteScreen.Home> {
+        composable<RouteScreen.Home> { backStackEntry ->
+            val args = backStackEntry.toRoute<RouteScreen.Home>()
             HomeUserScreen(
                 isLoggedIn = isLoggedIn,
                 onLoginSuccess = { isLoggedIn = true },
-                rootNavController = navController
+                rootNavController = navController,
+                openCreate = args.openCreate
             )
         }
+
+
 
         composable<RouteScreen.RecoverPassword> {
             RecoverPasswordScreen(
