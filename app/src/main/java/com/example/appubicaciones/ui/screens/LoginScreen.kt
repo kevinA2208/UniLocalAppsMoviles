@@ -23,6 +23,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit,
     onRegisterClick: () -> Unit,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
     padding: PaddingValues = PaddingValues()
 ) {
     var email by remember { mutableStateOf("") }
@@ -82,7 +84,7 @@ fun LoginScreen(
                 },
                 onValueChange = {
                     password = it
-                    isPasswordError = password.isBlank() || password.length < 5
+                    isPasswordError = password.isBlank() || password.length < 6
                 },
                 label = { Text(stringResource(R.string.txt_password)) },
                 singleLine = true,
@@ -102,7 +104,24 @@ fun LoginScreen(
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7237EC))
             ) {
-                Text(stringResource(R.string.txt_login))
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Text(stringResource(R.string.txt_login))
+                }
+            }
+
+            if (!errorMessage.isNullOrBlank()) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

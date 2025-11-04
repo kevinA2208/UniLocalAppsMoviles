@@ -15,7 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.appubicaciones.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +26,7 @@ fun <T> DropdownSelector(
     options: Iterable<T>,
     selectedOption: T,
     onOptionSelected: (T) -> Unit,
-    getOptionLabel: (T) -> String = { it.toString() }
+    getOptionLabel: @Composable (T) -> String = { it.toString() }
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -43,6 +45,7 @@ fun <T> DropdownSelector(
                 value = getOptionLabel(selectedOption),
                 onValueChange = {},
                 readOnly = true,
+                placeholder = { Text(stringResource(R.string.dropdown_place_holder)) },
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth()

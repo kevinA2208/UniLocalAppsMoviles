@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836697138343",
+    "project_id": "apps-moviles-d600b",
+    "storage_bucket": "apps-moviles-d600b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836697138343:android:97729e60372e2b17872782",
+        "android_client_info": {
+          "package_name": "com.example.appubicaciones"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhyJ1bvzyEHmH_o9H7Sp33dpLDKHpy4aQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

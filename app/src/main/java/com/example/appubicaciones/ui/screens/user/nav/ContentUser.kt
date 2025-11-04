@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +19,7 @@ import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserProfileScreen
+import com.example.appubicaciones.viewmodel.UserViewModel
 
 @Composable
 fun ContentUser(
@@ -26,6 +30,11 @@ fun ContentUser(
     onLoginSuccess: () -> Unit
 ) {
 
+    val userViewModel: UserViewModel = viewModel()
+
+    val isLoading by userViewModel.isLoading.collectAsState()
+    val isSuccess by userViewModel.isSuccess.collectAsState()
+    val errorMessage by userViewModel.errorMessage.collectAsState()
 
     NavHost(
         modifier = Modifier.padding(padding),
@@ -59,16 +68,21 @@ fun ContentUser(
                         rootNavController.navigate(RouteScreen.Register)
                     },
                     onLoginClick = { email, password ->
-                        if (email == "admin@gmail.com" && password == "12345") {
-                            onLoginSuccess()
-                            tabNavController.navigate(UserRouteTab.UserProfile) {
-                                popUpTo(UserRouteTab.UserProfile) { inclusive = true }
-                            }
-                        } else {
-                            Log.d("LoginScreen", "Credenciales incorrectas")
-                        }
-                    }
+                        userViewModel.loginUser(email, password)
+                    },
+                    isLoading = isLoading,
+                    errorMessage = errorMessage
                 )
+
+                if (isSuccess) {
+                    onLoginSuccess()
+                    tabNavController.navigate(UserRouteTab.UserProfile)
+
+                }
+
+                errorMessage?.let {
+                    Log.e("Login", "Error al iniciar sesión: $it")
+                }
             }
         }
 

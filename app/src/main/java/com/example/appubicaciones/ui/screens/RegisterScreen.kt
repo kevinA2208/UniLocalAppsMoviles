@@ -1,5 +1,6 @@
 package com.example.appubicaciones.ui.screens
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,13 +16,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.City
+import com.example.appubicaciones.data.model.User
 import com.example.appubicaciones.ui.screens.generics.DropdownSelector
+import com.example.appubicaciones.viewmodel.UserViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onRegisterClick: (String, String, String, String, City, String) -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    viewModel: UserViewModel = viewModel()
 ) {
     // Campos
     var names by remember { mutableStateOf("") }
@@ -44,11 +49,22 @@ fun RegisterScreen(
     val isLastNamesError = lastNamesTouched && (lastNames.isBlank() || lastNames.any { it.isDigit() })
     val isUsernameError = usernameTouched && (username.isBlank() || username.contains(" "))
     val isEmailError = emailTouched && (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches())
-    val isPasswordError = passwordTouched && (password.isBlank() || password.length < 5)
+    val isPasswordError = passwordTouched && (password.isBlank() || password.length < 6)
     val isCityError = cityTouched && selectedCity == null
 
     val isFormValid = !isNamesError && !isLastNamesError && !isUsernameError &&
             !isEmailError && !isPasswordError && !isCityError
+
+    // Estados del ViewModel
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isSuccess by viewModel.isSuccess.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            onRegisterClick(names, lastNames, username, email, selectedCity ?: City.BOGOTA, password)
+        }
+    }
 
     Surface {
         Column(
@@ -134,12 +150,12 @@ fun RegisterScreen(
             DropdownSelector(
                 label = stringResource(R.string.txt_user_city),
                 options = City.entries,
-                selectedOption = selectedCity ?: City.BOGOTA,
+                selectedOption = selectedCity,
                 onOptionSelected = {
                     selectedCity = it
                     cityTouched = true
                 },
-                getOptionLabel = { it.displayName }
+                getOptionLabel = { it?.displayName ?: stringResource(R.string.dropdown_place_holder) }
             )
 
             // Contraseña
@@ -162,15 +178,41 @@ fun RegisterScreen(
 
             Button(
                 onClick = {
-                    selectedCity?.let {
-                        onRegisterClick(names, lastNames, username, email, it, password)
+                    selectedCity?.let { city ->
+                        val user = User(
+                            id = "",
+                            names = names,
+                            lastnames = lastNames,
+                            username = username,
+                            email = email,
+                            city = city
+                        )
+                        viewModel.registerUser(user, password)
+                        Log.d("REGISTRA", "Se supone")
                     }
                 },
                 enabled = isFormValid,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7237EC))
             ) {
-                Text(stringResource(R.string.txt_register))
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Text(stringResource(R.string.txt_register))
+                }
+            }
+
+            // Mostrar error si existe
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
