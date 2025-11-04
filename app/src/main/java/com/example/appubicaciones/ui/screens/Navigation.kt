@@ -13,10 +13,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.toRoute
 import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.ui.screens.user.HomeUserScreen
 import com.example.appubicaciones.viewmodel.UserViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appubicaciones.ui.screens.user.tabs.RecoverPasswordScreen
 
 @Composable
 fun Navigation() {
@@ -26,7 +28,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = RouteScreen.Home,
+        startDestination = RouteScreen.Home(),
         modifier = Modifier
     ) {
         composable<RouteScreen.Login> {
@@ -56,7 +58,10 @@ fun Navigation() {
                     userViewModel.loginUser(email, password)
                 },
                 isLoading = isLoading,
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
+                onRecoverPasswordClick = {
+                    navController.navigate(RouteScreen.RecoverPassword)
+                }
             )
 
             if (errorMessage != null) {
@@ -73,18 +78,33 @@ fun Navigation() {
                     navController.popBackStack()
                 },
                 onRegisterClick = { _, _, _, _, _, _ ->
-                    navController.navigate(RouteScreen.Home) {
+                    navController.navigate(RouteScreen.Home(openCreate = false)) {
                         popUpTo(RouteScreen.Register) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable<RouteScreen.Home> {
+        composable<RouteScreen.Home> { backStackEntry ->
+            val args = backStackEntry.toRoute<RouteScreen.Home>()
             HomeUserScreen(
                 isLoggedIn = isLoggedIn,
                 onLoginSuccess = { isLoggedIn = true },
-                rootNavController = navController
+                rootNavController = navController,
+                openCreate = args.openCreate
+            )
+        }
+
+
+
+        composable<RouteScreen.RecoverPassword> {
+            RecoverPasswordScreen(
+                onSubmitClick = { newPassword, otp ->
+                    navController.popBackStack()
+                },
+                onResendClick = {
+                    // Lógica para reenviar OTP
+                }
             )
         }
     }

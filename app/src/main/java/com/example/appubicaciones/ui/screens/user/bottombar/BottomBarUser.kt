@@ -1,51 +1,62 @@
 package com.example.appubicaciones.ui.screens.user.bottombar
 
+import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.NavHostController
 import com.example.appubicaciones.R
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 
+@SuppressLint("RestrictedApi")
 @Composable
-fun BottomBarUser(
-    tabNavController: NavHostController
-){
-
+fun BottomBarUser(tabNavController: NavHostController) {
     val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val currentDestination: NavDestination? = navBackStackEntry?.destination
 
     NavigationBar {
-        Destination.entries.forEachIndexed { index, destination ->
+        Destination.entries.forEach { destination ->
+            val isSelected: Boolean = currentDestination
+                ?.hierarchy
+                ?.any { dest ->
+                    val currentRoute = dest.route?.substringBefore('?')
+                    val tabRoute     = destination.route::class.qualifiedName
+                    currentRoute == tabRoute
+                } == true
 
-            val isSelected = currentDestination?.route == destination.route::class.qualifiedName
-
-            // Profile
             NavigationBarItem(
-                label = {
-                    Text(text = stringResource(destination.label)
-                    )
-                },
+                selected = isSelected,
                 onClick = {
-                    tabNavController.navigate(destination.route)
+                    tabNavController.navigate(destination.route) {
+                        popUpTo(tabNavController.graph.startDestinationId) {
+                            inclusive = false
+                            saveState = false
+                        }
+                        launchSingleTop = true
+                        restoreState = false
+                    }
                 },
                 icon = {
                     Icon(
-                        imageVector = destination.icon,
-                        contentDescription = stringResource(destination.label)
+                        imageVector = if (isSelected) destination.selectedIcon else destination.unselectedIcon,
+                        contentDescription = null
                     )
                 },
-                selected = isSelected
+                alwaysShowLabel = false,
+                label = { Text(text = androidx.compose.ui.res.stringResource(destination.label)) }
             )
         }
     }
@@ -54,9 +65,25 @@ fun BottomBarUser(
 enum class Destination(
     val route: UserRouteTab,
     val label: Int,
-    val icon: ImageVector
-){
-    HOME(UserRouteTab.Map, R.string.nav_home, Icons.Default.Home),
-    FAVORITES(UserRouteTab.Favorites, R.string.nav_favorites, Icons.Default.Favorite),
-    PROFILE(UserRouteTab.UserProfile, R.string.nav_profile, Icons.Default.AccountCircle)
+    val selectedIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    val unselectedIcon: androidx.compose.ui.graphics.vector.ImageVector
+) {
+    FAVORITES(
+        UserRouteTab.Favorites,
+        R.string.nav_favorites,
+        Icons.Filled.Favorite,
+        Icons.Outlined.FavoriteBorder
+    ),
+    HOME(
+        UserRouteTab.Map,
+        R.string.nav_home,
+        Icons.Filled.LocationOn,
+        Icons.Outlined.LocationOn
+    ),
+    PROFILE(
+        UserRouteTab.UserProfile,
+        R.string.nav_profile,
+        Icons.Filled.Person,
+        Icons.Outlined.Person
+    );
 }

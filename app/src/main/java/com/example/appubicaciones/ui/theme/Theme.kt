@@ -34,20 +34,11 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun AppUbicacionesTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = false, // 👈 siempre falso
+    dynamicColor: Boolean = false, // 👈 desactiva dinámicos del sistema
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = LightColorScheme // 👈 fuerza modo claro siempre
 
     MaterialTheme(
         colorScheme = colorScheme,

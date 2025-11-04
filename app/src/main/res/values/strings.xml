@@ -22,11 +22,13 @@
     <string name="error_city">Debe seleccionar una ciudad</string>
     <string name="error_map_not_found">El mapa no se encuentra disponible actualmente</string>
     <string name="error_favorites_not_found">No tienes ubicaciones favoritas</string>
+    <string name="bad_credentials">Correo o contraseña incorrectos</string>
 
     <!-- NavBar bottom -->
     <string name="nav_home">Inicio</string>
     <string name="nav_favorites">Favoritos</string>
     <string name="nav_profile">Perfil</string>
+    <string name="nav_services">Servicios</string>
 
     <!-- Perfil User -->
     <string name="profile_title">Perfil de Usuario</string>
@@ -47,6 +49,163 @@
     <string name="create_place_address">Dirección</string>
     <string name="save_place">Guardar Lugar</string>
     <string name="create_place_schedule_label"> Horario del lugar </string>
+    <string name="create_place_selected_images">Imágenes seleccionadas: %1$d</string>
+    <string name="create_place_add_images">Imágenes</string>
+    <string name="create_place_load_location">Cargar ubicación</string>
+    <string name="create_place_image_description">Imagen %1$d</string>
+    <string name="create_place_delete_image">Eliminar</string>
+    <string name="create_place_remove_all_images">Quitar todas</string>
+
+    <!-- Recuperar password -->
+    <string name="recover_password_title">Recuperar contraseña</string>
+    <string name="recover_password_instructions">Se ha enviado un correo a la dirección %1$s, ingrese su nueva contraseña y el código OTP:</string>
+    <string name="repeat_password">Repite la contraseña:</string>
+    <string name="otp_code">Código OTP:</string>
+    <string name="new_password">Nueva contraseña:</string>
+    <string name="resend_otp">Reenviar Correo Electrónico</string>
+    <string name="reset_password">Restablecer contraseña</string>
+
+    <!-- Lugares Creados por Usuario -->
+    <string name="created_places_title">Historial de lugares creados</string>
+    <string name="no_created_places_pending">No hay lugares pendientes por aprobar.</string>
+    <string name="no_created_places_approved">No hay lugares aprobados todavía.</string>
+    <string name="places_approved_title">Aprobados</string>
+    <string name="places_pending_title">Pendientes</string>
+    <string name="detail_place">Ver detalles</string>
+
+    <!-- Detalle de lugar -->
+    <string name="place_detail_title">Detalle del lugar</string>
+    <string name="place_detail_no_images">No hay imágenes disponibles</string>
+    <string name="place_detail_open">Este lugar está abierto</string>
+    <string name="place_detail_description">Descripción: %1$s</string>
+    <string name="place_detail_schedule">Horario: %1$s a %2$s, de %3$s a %4$s</string>
+    <string name="place_detail_phone">Teléfonos: %1$s</string>
+    <string name="place_detail_calification">Calificaciones:</string>
+    <string name="place_detail_comments">Ver comentarios</string>
+    <string name="place_detail_products_services">Ver productos / servicios</string>
+    <string name="place_detail_category">Categoria: %1$s</string>
+    <string name="place_detail_address">Dirección: %1$s</string>
+
+    <!-- Servicios -->
+    <string name="txt_services">Lista de productos / Servicios</string>
+    <string name="txt_detail_product_services">Detalle de producto / Servicios</string>
+    <string name="txt_create_product_services">Crear producto / Servicios</string>
+
+    <!-- Comentarios de Lugar -->
+    <string name="place_comments_title">Comentarios de Lugar</string>
+    <string name="place_comments_place_label">Lugar:</string>
+    <string name="place_comments_user">Nombre usuario</string>
+    <string name="place_comments_comment">Comentario</string>
+    <string name="place_comments_view_comment">Ver comentario</string>
+
+    <!-- Detalle de Comentario -->
+    <string name="comment_detail_title">Detalle de Comentario</string>
+    <string name="comment_detail_responses">Respuestas</string>
+    <string name="comment_detail_reply_button">Responder</string>
+    <string name="comment_detail_default_place">Lugar 1</string>
+    <string name="comment_detail_default_user">Nombre de Usuario</string>
+    <string name="comment_detail_default_comment">Comentario</string>
+    <string name="comment_detail_default_response">Respuesta</string>
+
+    <!-- Formulario de respuesta -->
+    <string name="response_form_title">Escribe tu respuesta</string>
+    <string name="response_form_placeholder">Escribe algo...</string>
+    <string name="response_form_cancel">Cancelar</string>
+    <string name="response_form_send">Enviar</string>
+
+    <!-- Pantalla de respuesta -->
+    <string name="response_screen_title">Responder comentario</string>
+
+    <!-- Favoritos del usuario -->
+    <string name="favorites_title">Historial de lugares guardados</string>
+    <string name="favorites_empty_message">Aún no tienes lugares guardados.</string>
+    <string name="favorites_remove">Quitar de favoritos</string>
+    <string name="favorites_add">Agregar a favoritos</string>
+    <string name="favorites_expand">Expandir</string>
+    <string name="favorites_collapse">Contraer</string>
+    <string name="favorites_description">Descripción</string>
+    <string name="favorites_no_description">Sin descripción</string>
+    <string name="favorites_phone">Teléfono</string>
+    <string name="favorites_category">Categoría</string>
+    <string name="favorites_open">Abre</string>
+    <string name="favorites_close">Cierra</string>
+    <string name="favorites_see_more">Ver más</string>
+    <string name="favorites_need_login">Debes iniciar sesión para ver tus lugares favoritos.</string>
+
+    <!-- Pantalla: Añadir imágenes -->
+    <string name="add_images_title">Añadir imágenes del lugar</string>
+    <string name="add_images_back">Volver</string>
+    <string name="add_images_selected_count">Imágenes seleccionadas: %1$d</string>
+    <string name="add_images_previous">Anterior</string>
+    <string name="add_images_next">Siguiente</string>
+    <string name="add_images_load_new">Cargar nueva imagen</string>
+    <string name="add_images_instructions">
+        Para la aprobación del lugar en UniLocal,
+        deberá añadir mínimo 1 imagen.
+    </string>
+    <string name="add_images_services_instructions">
+        Debes añadir por lo menos una imagen del servicio o producto que ofrece el lugar.
+    </string>
+    <string name="add_images_save">Guardar imágenes</string>
+    <string name="add_images_image_description">Imagen %1$d</string>
+
+    <!-- Pantalla: Añadir ubicación -->
+    <string name="add_location_app_name">UniLocal</string>
+    <string name="add_location_title">Añadir ubicación del lugar</string>
+    <string name="add_location_label_address">Dirección:</string>
+    <string name="add_location_save_button">Guardar ubicación</string>
+
+    <!-- Crear producto / servicio -->
+    <string name="create_product_save">Guardar producto / servicio</string>
+    <string name="create_product_name">Nombre</string>
+    <string name="create_product_name_error">El nombre es obligatorio</string>
+    <string name="create_product_description">Descripción</string>
+    <string name="create_product_description_error">La descripción es obligatoria</string>
+    <string name="create_product_apply_price_title">¿Aplica precio?</string>
+    <string name="create_product_apply_price_hint">En caso de que el producto o servicio tenga un precio, ingréselo (COP)</string>
+    <string name="create_product_price_label">Precio (COP)</string>
+    <string name="create_product_price_error">Ingresa un precio válido mayor que 0</string>
+    <string name="create_product_images">Imágenes</string>
+
+    <!-- Pantalla: Detalle de producto o servicio -->
+    <string name="detail_product_service_back">Volver</string>
+    <string name="detail_product_service_back_content_description">Atrás</string>
+    <string name="detail_product_service_delete">Eliminar</string>
+    <string name="detail_product_service_title">Detalle del producto o servicio</string>
+    <string name="detail_product_service_name_label">Nombre: </string>
+    <string name="detail_product_service_description_label">Descripción: </string>
+    <string name="detail_product_service_price_label">Precio: </string>
+    <string name="detail_product_service_price_na">N/A</string>
+
+    <!-- Pantalla: Lista de productos o servicios -->
+    <string name="services_title">Productos o servicios del lugar</string>
+    <string name="services_add">Agregar</string>
+    <string name="services_view_detail">Ver detalle</string>
+
+    <!-- Pantalla: Mapa -->
+    <string name="map_search_placeholder">Buscar lugar...</string>
+    <string name="map_search_icon_description">Buscar</string>
+    <string name="map_add_place_description">Añadir lugar</string>
+
+    <!-- Pantalla: Buscar lugares -->
+    <string name="search_places_title">Búsqueda de lugares</string>
+    <string name="search_places_show_filters">Mostrar filtros</string>
+    <string name="search_places_hide_filters">Ocultar filtros</string>
+    <string name="search_places_placeholder">Buscar</string>
+    <string name="search_places_category_filter_label">Filtrar lugares por categoría</string>
+    <string name="search_places_category_label">Categoría:</string>
+    <string name="search_places_all_categories">Todas</string>
+    <string name="search_places_distance_filter_label">Filtrar lugares dentro de la distancia ingresada</string>
+    <string name="search_places_distance_label">Distancia:</string>
+    <string name="search_places_apply_filters">Aplicar filtros</string>
+    <string name="search_places_no_results">No se encontraron lugares.</string>
+    <string name="search_places_view_more">Ver más</string>
+    <string name="search_places_hide_details">Ocultar</string>
+    <string name="search_places_description">Descripción: %1$s</string>
+    <string name="search_places_no_description">Sin descripción</string>
+    <string name="search_places_phone">Teléfono: %1$s</string>
+    <string name="search_places_category">Categoría: %1$s</string>
+    <string name="search_places_schedule">Horario: %1$s %2$s - %3$s %4$s</string>
 
     <!-- Dropdown place holder text -->
     <string name="dropdown_place_holder">Selecciona una opción</string>

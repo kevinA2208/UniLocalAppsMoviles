@@ -22,7 +22,7 @@ fun UserProfileScreen(
     names: String = "Kevin Andres",
     lastnames: String = "Usama Trespacios",
     username: String = "KevinA2208",
-    email: String = "usamo489@gmail.com",
+    email: String = "usuario@gmail.com",
     city: String = "Armenia",
     tabNavController: NavHostController,
     onEditClick: () -> Unit = {},

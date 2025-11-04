@@ -6,5 +6,6 @@ data class ProductService(
     val description: String = "",
     val applyPrice: Boolean = false,
     val price: Double? = null,
-    val placeId: String = ""
+    val placeId: String = "",
+    val images: List<String> = emptyList()
 )

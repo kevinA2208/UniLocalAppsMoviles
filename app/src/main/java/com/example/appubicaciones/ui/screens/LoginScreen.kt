@@ -25,6 +25,7 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     isLoading: Boolean = false,
     errorMessage: String? = null,
+    onRecoverPasswordClick: () -> Unit,
     padding: PaddingValues = PaddingValues()
 ) {
     var email by remember { mutableStateOf("") }
@@ -130,7 +131,7 @@ fun LoginScreen(
             TextButton(onClick = onRegisterClick) {
                 Text(stringResource(R.string.txt_register))
             }
-            TextButton(onClick = onRegisterClick) {
+            TextButton(onClick = onRecoverPasswordClick) {
                 Text(stringResource(R.string.txt_recover_password))
             }
         }

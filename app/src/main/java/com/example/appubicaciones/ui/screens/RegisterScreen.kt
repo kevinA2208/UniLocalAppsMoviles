@@ -188,7 +188,6 @@ fun RegisterScreen(
                             city = city
                         )
                         viewModel.registerUser(user, password)
-                        Log.d("REGISTRA", "Se supone")
                     }
                 },
                 enabled = isFormValid,

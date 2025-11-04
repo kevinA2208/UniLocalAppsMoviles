@@ -18,7 +18,8 @@ import com.example.appubicaciones.ui.screens.user.topbar.TopBarUser
 fun HomeUserScreen(
     isLoggedIn: Boolean,
     onLoginSuccess: () -> Unit,
-    rootNavController: NavHostController
+    rootNavController: NavHostController,
+    openCreate: Boolean = false
 ){
 
     val tabNavController = rememberNavController()
@@ -39,7 +40,8 @@ fun HomeUserScreen(
             tabNavController = tabNavController,
             rootNavController = rootNavController,
             isLoggedIn = isLoggedIn,
-            onLoginSuccess = onLoginSuccess
+            onLoginSuccess = onLoginSuccess,
+            openCreate = openCreate
         )
     }
 }
