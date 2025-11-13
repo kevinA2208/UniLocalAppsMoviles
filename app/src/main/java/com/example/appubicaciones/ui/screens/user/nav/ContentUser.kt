@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +55,8 @@ import com.example.appubicaciones.ui.screens.user.tabs.ResponseScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserCreatedPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserProfileScreen
+import com.example.appubicaciones.viewmodel.FavoritePlaceViewModel
+import com.example.appubicaciones.viewmodel.PlaceViewModel
 import com.example.appubicaciones.viewmodel.UserViewModel
 
 @Composable
@@ -73,6 +76,8 @@ fun ContentUser(
     }
 
     val userViewModel: UserViewModel = viewModel()
+    val placeViewModel: PlaceViewModel = viewModel()
+    val favoritePlaceViewModel: FavoritePlaceViewModel = viewModel()
 
     val isLoading by userViewModel.isLoading.collectAsState()
     val isSuccess by userViewModel.isSuccess.collectAsState()
@@ -85,9 +90,11 @@ fun ContentUser(
         startDestination = UserRouteTab.Map
     ){
         composable<UserRouteTab.Map> {
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val loggedIn = currentUser != null
             MapScreen(
                 onAddPlaceClick = {
-                    if(isLoggedIn){
+                    if (loggedIn) {
                         tabNavController.navigate(UserRouteTab.CreatePlace)
                     } else {
                         tabNavController.navigate(UserRouteTab.UserProfile)
@@ -97,6 +104,12 @@ fun ContentUser(
             )
         }
         composable<UserRouteTab.CreatePlace> { backStackEntry ->
+
+            val isLoading by placeViewModel.isLoading.collectAsStateWithLifecycle()
+            val isSuccess by placeViewModel.isSuccess.collectAsStateWithLifecycle()
+            val errorMessage by placeViewModel.errorMessage.collectAsStateWithLifecycle()
+
+
             val imgsFlow = backStackEntry
                 .savedStateHandle
                 .getStateFlow("picked_images", emptyList<String>())
@@ -108,15 +121,42 @@ fun ContentUser(
                 .getStateFlow("picked_address", "")
             val addr by addrFlow.collectAsStateWithLifecycle()
 
+            LaunchedEffect(Unit) {
+                placeViewModel.resetStatus()
+            }
+
             CreatePlaceScreen(
                 initialAddress = addr,
                 pickedImages = pickedUris,
                 onAddImagesClick = { tabNavController.navigate(UserRouteTab.AddImages) },
                 onLoadLocationClick = { tabNavController.navigate(UserRouteTab.AddLocation) },
                 onSaveClick = { name, description, dayFrom, dayTo, openHour, closeHour, phones, category, address ->
-                    tabNavController.popBackStack()
+                    val newPlace = Place(
+                        name = name,
+                        description = description,
+                        openDay = dayFrom,
+                        closeDay = dayTo,
+                        openingHour = openHour,
+                        closingHour = closeHour,
+                        phone = phones,
+                        category = category,
+                        address = address,
+                        verification_completed = false
+                    )
+                    placeViewModel.createPlace(newPlace)
                 }
             )
+
+            LaunchedEffect(isSuccess) {
+                if (isSuccess) {
+                    tabNavController.popBackStack()
+                    placeViewModel.resetStatus()
+                }
+            }
+
+            errorMessage?.let {
+                println("Error al guardar lugar: $it")
+            }
         }
 
         composable<UserRouteTab.AddLocation> {
@@ -134,36 +174,68 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.Favorites> {
-            val places = remember { approvedPlaces }
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val favoritePlaces by favoritePlaceViewModel.favoritePlaces.collectAsState()
+            val isLoading by favoritePlaceViewModel.isLoading.collectAsState()
+            val isLoggedIn = currentUser != null
 
-            val favs = remember { mutableStateMapOf<String, Boolean>().apply {
-                places.forEach { put(it.id, true) }
-            }}
+            LaunchedEffect(currentUser?.id) {
+                currentUser?.id?.let { userId ->
+                    favoritePlaceViewModel.loadFavoritesForUser(userId)
+                }
+            }
 
-            if (!isLoggedIn) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.favorites_need_login),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+            when {
+                !isLoggedIn -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.favorites_need_login),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
+                    }
+                }
+
+                isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Color(0xFF7237EC))
+                    }
+                }
+
+                favoritePlaces.isEmpty() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No tienes lugares favoritos aún.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
+                    }
+                }
+
+                else -> {
+                    UserFavoritesScreen(
+                        places = favoritePlaces,
+                        isLoggedIn = isLoggedIn,
+                        onPlaceClick = { place ->
+                            tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
+                        },
+                        onToggleFavorite = { place, _ ->
+                            currentUser?.id?.let { userId ->
+                                favoritePlaceViewModel.toggleFavorite(userId, place.id)
+                            }
+                        }
                     )
                 }
-            } else {
-                UserFavoritesScreen(
-                    places = places,
-                    isLoggedIn = isLoggedIn,
-                    onPlaceClick = { place ->
-                        tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
-                    },
-                    onToggleFavorite = { place, isFav ->
-                        favs[place.id] = isFav
-                    }
-                )
             }
         }
 
@@ -211,7 +283,9 @@ fun ContentUser(
                     tabNavController = tabNavController,
                     onEditClick = { tabNavController.navigate(UserRouteTab.EditProfile) },
                     onRecoverPasswordClick = { rootNavController.navigate(RouteScreen.RecoverPassword) },
-                    onHistoryClick = { tabNavController.navigate(UserRouteTab.UserCreatedPlaces) },
+                    onHistoryClick = {
+                        tabNavController.navigate(UserRouteTab.UserCreatedPlaces)
+                    },
                     onLogoutClick = {
                         // Limpiar datos en Firebase y memoria
                         userViewModel.logoutUser()
@@ -248,8 +322,18 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.UserCreatedPlaces> {
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val places by placeViewModel.userPlaces.collectAsState()
+
+            // Cargar lugares del usuario actual
+            LaunchedEffect(currentUser?.id) {
+                currentUser?.id?.let { userId ->
+                    placeViewModel.getPlacesByUser(userId)
+                }
+            }
+
             UserCreatedPlacesScreen(
-                places = mockPlaces,
+                places = places,
                 onPlaceClick = { place ->
                     tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
                 }
@@ -276,8 +360,8 @@ fun ContentUser(
 
                         userViewModel.updateUser(updatedUser) { success ->
                             if (success) {
-                                userViewModel.loadCurrentUser() // 🔄 Recarga el usuario actualizado
-                                tabNavController.popBackStack() // ⬅️ Regresa al perfil
+                                userViewModel.loadCurrentUser()
+                                tabNavController.popBackStack()
                             }
                         }
                     }
@@ -316,29 +400,74 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.PlaceDetail> { backStackEntry ->
-            val placeId = backStackEntry.arguments?.getString("placeId")
-                ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
-                ?: return@composable
+            val placeId = backStackEntry.arguments?.getString("placeId") ?: return@composable
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val place by placeViewModel.selectedPlace.collectAsState()
+            val favoritePlaceViewModel: FavoritePlaceViewModel = viewModel()
 
-            val place = mockPlaces.find { it.id == placeId }
+            // Cargamos el lugar solo una vez
+            LaunchedEffect(placeId) {
+                placeViewModel.getPlaceById(placeId)
+            }
 
-            place?.let {
+            LaunchedEffect(currentUser?.id) {
+                currentUser?.id?.let { userId ->
+                    favoritePlaceViewModel.loadFavoritesForUser(userId)
+                }
+            }
+
+            // Renderizado condicional
+            if (place != null) {
                 PlaceDetailScreen(
-                    place = it,
-                    onViewComments = { tabNavController.navigate(UserRouteTab.PlaceComments(it.id)) },
-                    onViewProducts = { tabNavController.navigate(UserRouteTab.Services) },
-                    onDeletePlace = { /* TODO */ }
+                    place = place!!,
+                    onViewComments = {
+                        tabNavController.navigate(UserRouteTab.PlaceComments(place!!.id))
+                    },
+                    onViewProducts = {
+                        tabNavController.navigate(UserRouteTab.Services)
+                    },
+                    onDeletePlace = {
+                        currentUser?.id?.let { userId ->
+                            placeViewModel.deletePlace(place!!.id, userId)
+                            tabNavController.popBackStack()
+                        }
+                    },
+                    userId = currentUser?.id ?: "",
                 )
+            } else {
+                // Mostrar un indicador de carga
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF7237EC))
+                }
             }
         }
 
         composable<UserRouteTab.SearchPlaces> {
-            SearchPlacesScreen(
-                allPlaces = mockPlaces,
-                onPlaceClick = { place ->
-                    tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
+            val allPlaces by placeViewModel.filteredPlaces.collectAsState()
+            val isLoading by placeViewModel.isLoading.collectAsState()
+
+            LaunchedEffect(Unit) {
+                placeViewModel.getAllPlaces()
+            }
+
+            if (isLoading) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            )
+            } else {
+                SearchPlacesScreen(
+                    allPlaces = allPlaces,
+                    onPlaceClick = { place ->
+                        tabNavController.navigate(UserRouteTab.PlaceDetail(place.id))
+                    },
+                    onApplyFilters = { name, category ->
+                        placeViewModel.filterPlaces(name, category)
+                    }
+                )
+            }
         }
 
         composable<UserRouteTab.PlaceComments> { backStackEntry ->

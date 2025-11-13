@@ -142,22 +142,6 @@ private fun FavoriteItemCard(
                 )
             }
 
-            if (showFavoriteAction) {
-                val favColor by animateColorAsState(
-                    targetValue = if (isFavorite) Color(0xFF7237EC) else Color(0xFFBDBDBD),
-                    label = "favTint"
-                )
-                IconButton(onClick = { onToggleFavorite(!isFavorite) }) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
-                        contentDescription = stringResource(
-                            if (isFavorite) R.string.favorites_remove else R.string.favorites_add
-                        ),
-                        tint = favColor
-                    )
-                }
-            }
-
             IconButton(onClick = onToggleExpand) {
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
@@ -208,15 +192,4 @@ private fun DetailRow(label: String, value: String) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = Color(0xFF6A1B9A))
         Text(value, style = MaterialTheme.typography.bodyMedium, color = Color(0xFF2B2B2B))
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewFavorites() {
-    val mock = listOf(
-        Place("1", "Lugar 1","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.PARK,"Dirección 1"),
-        Place("2", "Lugar 2","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.FOOD,"Dirección 2"),
-        Place("3", "Lugar 3","", Days.MONDAY,Days.SUNDAY,"08:00","18:00","+57", PlaceCategory.MUSEUM,"Dirección 3")
-    )
-    UserFavoritesScreen(places = mock, isLoggedIn = true)
 }

@@ -31,7 +31,7 @@ fun UserCreatedPlacesScreen(
 
     var showPending by remember { mutableStateOf(false) }
 
-    val filteredPlaces = places.filter { it.verification_completed == showPending }
+    val filteredPlaces = places.filter { it.verification_completed != showPending }
 
     Column(
         modifier = Modifier

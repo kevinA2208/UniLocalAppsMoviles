@@ -7,9 +7,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,18 +25,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appubicaciones.data.model.Place
 import androidx.compose.material.icons.outlined.Star as StarOutline
 import com.example.appubicaciones.R
+import com.example.appubicaciones.viewmodel.FavoritePlaceViewModel
 
 @Composable
 fun PlaceDetailScreen(
     place: Place,
+    userId: String,
     onViewComments: () -> Unit = {},
     onViewProducts: () -> Unit = {},
     onDeletePlace: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val favoriteViewModel: FavoritePlaceViewModel = viewModel()
+    val favorites by favoriteViewModel.favorites.collectAsState()
+    val isFavorite = remember(favorites) { favoriteViewModel.isFavorite(place.id) }
+
+    // Cargar favoritos si aún no se ha hecho
+    LaunchedEffect(userId) {
+        favoriteViewModel.loadFavoritesForUser(userId)
+    }
 
     Column(
         modifier = Modifier
@@ -78,16 +99,50 @@ fun PlaceDetailScreen(
                 fontSize = 18.sp,
                 modifier = Modifier.weight(1f)
             )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Botón favorito
+                if (userId.isNotEmpty()) {
+                    IconButton(onClick = {
+                        favoriteViewModel.toggleFavorite(userId, place.id)
+                    }) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Quitar de favoritos" else "Agregar a favoritos",
+                            tint = if (isFavorite) Color(0xFFFFD700) else Color.Gray
+                        )
+                    }
+                }
 
-            IconButton(
-                onClick = onDeletePlace,
-                modifier = Modifier.size(48.dp) // tamaño fijo
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar lugar",
-                    tint = Color(0xFFD32F2F),
-                    modifier = Modifier.size(28.dp) // ícono siempre igual
+                // Botón eliminar (solo se muestra si el lugar lo creó el usuario logueado)
+                if (place.userId == userId) {
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar lugar",
+                            tint = Color(0xFFD32F2F),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            }
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    title = { Text(stringResource(R.string.place_detail_delete_place)) },
+                    text = { Text(stringResource(R.string.place_detail_confirm_delete)) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDeleteDialog = false
+                            onDeletePlace() // Llama la función del ViewModel
+                        }) {
+                            Text(stringResource(R.string.place_detail_delete), color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text(stringResource(R.string.place_detail_cancel))
+                        }
+                    }
                 )
             }
         }

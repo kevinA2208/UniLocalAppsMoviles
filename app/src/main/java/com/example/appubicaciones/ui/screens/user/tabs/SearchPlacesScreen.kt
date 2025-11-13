@@ -24,7 +24,8 @@ import com.example.appubicaciones.R
 fun SearchPlacesScreen(
     allPlaces: List<Place>,
     categories: List<PlaceCategory> = PlaceCategory.entries,
-    onPlaceClick: (Place) -> Unit = {}
+    onPlaceClick: (Place) -> Unit = {},
+    onApplyFilters: (String, PlaceCategory?) -> Unit = { _, _ -> }
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf<PlaceCategory?>(null) }
@@ -171,7 +172,7 @@ fun SearchPlacesScreen(
 
                 Button(
                     onClick = {
-                        results = filterPlaces(allPlaces, name, category, distance, unit)
+                        onApplyFilters(name, category)
                         showFilters = false
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -189,7 +190,7 @@ fun SearchPlacesScreen(
         Spacer(Modifier.height(12.dp))
 
         // Resultados
-        if (results.isEmpty()) {
+        if (allPlaces.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(stringResource(R.string.search_places_no_results), color = cs.onSurfaceVariant)
             }
@@ -199,7 +200,7 @@ fun SearchPlacesScreen(
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(results, key = { it.id }) { place ->
+                items(allPlaces, key = { it.id }) { place ->
                     ResultItemCard(place = place, onClick = { onPlaceClick(place) })
                 }
             }

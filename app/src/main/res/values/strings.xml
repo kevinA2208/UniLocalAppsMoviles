@@ -86,7 +86,11 @@
     <string name="place_detail_products_services">Ver productos / servicios</string>
     <string name="place_detail_category">Categoria: %1$s</string>
     <string name="place_detail_address">Dirección: %1$s</string>
-
+    <string name="place_detail_delete_place">Eliminar lugar</string>
+    <string name="place_detail_confirm_delete">¿Seguro que deseas eliminar este lugar? Esta acción no se puede deshacer.</string>
+    <string name="place_detail_cancel">Cancelar</string>
+    <string name="place_detail_delete">Eliminar</string>
+    
     <!-- Servicios -->
     <string name="txt_services">Lista de productos / Servicios</string>
     <string name="txt_detail_product_services">Detalle de producto / Servicios</string>
