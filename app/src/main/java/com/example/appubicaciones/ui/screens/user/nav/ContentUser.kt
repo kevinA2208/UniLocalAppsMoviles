@@ -51,7 +51,6 @@ import com.example.appubicaciones.ui.screens.user.tabs.EditUserProfileScreen
 import com.example.appubicaciones.ui.screens.user.tabs.MapScreen
 import com.example.appubicaciones.ui.screens.user.tabs.PlaceDetailScreen
 import com.example.appubicaciones.ui.screens.user.tabs.SearchPlacesScreen
-import com.example.appubicaciones.ui.screens.user.tabs.ResponseScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserCreatedPlacesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserProfileScreen
@@ -471,63 +470,36 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.PlaceComments> { backStackEntry ->
-            val placeId = backStackEntry.arguments?.getString("placeId")
-                ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? Int
-                ?: return@composable
-
-            val place = mockPlaces.find { it.id == placeId }
+            val placeId = backStackEntry.arguments?.getString("placeId") ?: return@composable
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val place by placeViewModel.selectedPlace.collectAsState()
 
             place?.let {
                 PlaceCommentsScreen(
+                    placeId = it.id,
                     placeName = it.name,
-                    comments = listOf(
-                        "Kevin" to "Excelente lugar",
-                        "Ana" to "Muy buena atención",
-                        "Carlos" to "Volvería sin dudarlo"
-                    ),
-                    onCommentClick = { commentIndex ->
-                        tabNavController.navigate(UserRouteTab.CommentDetail(it.id, commentIndex))
+                    userId = currentUser?.id ?: "",
+                    userName = currentUser?.username ?: "Invitado",
+                    onCommentClick = { commentId ->
+                        tabNavController.navigate(UserRouteTab.CommentDetail(it.id, commentId))
                     }
                 )
             }
         }
 
         composable<UserRouteTab.CommentDetail> { backStackEntry ->
-            val placeId = backStackEntry.arguments?.getString("placeId")
-                ?: backStackEntry.destination.arguments["placeId"]?.defaultValue as? String
-                ?: return@composable
+            val placeId = backStackEntry.arguments?.getString("placeId") ?: return@composable
+            val commentId = backStackEntry.arguments?.getString("commentId") ?: return@composable
+            val currentUser by userViewModel.currentUser.collectAsState()
 
-            val commentId = backStackEntry.arguments?.getInt("commentId")
-                ?: backStackEntry.destination.arguments["commentId"]?.defaultValue as? Int
-                ?: return@composable
-
-            val place = mockPlaces.find { it.id == placeId }
-
-            val comment = "Comentario de ejemplo $commentId"
-
-            place?.let {
-                CommentDetailScreen(
-                    placeName = it.name,
-                    userName = "Usuario Ejemplo",
-                    comment = comment,
-                    responses = listOf(
-                        "Ana" to "Totalmente de acuerdo",
-                        "Carlos" to "Buen comentario"
-                    ),
-                    onRespondClick = { tabNavController.navigate(UserRouteTab.CommentResponse(commentId)) }
-                )
-            }
-        }
-
-        composable<UserRouteTab.CommentResponse> { backStackEntry ->
-            val commentId = backStackEntry.arguments?.getInt("commentId")
-                ?: backStackEntry.destination.arguments["commentId"]?.defaultValue as? Int
-                ?: return@composable
-
-            ResponseScreen(
-                navController = tabNavController,
-                commentId = commentId
+            CommentDetailScreen(
+                placeId = placeId,
+                commentId = commentId,
+                userId = currentUser?.id ?: "",
+                userName = currentUser?.username ?: "Invitado",
+                onBack = { tabNavController.popBackStack() }
             )
         }
+
     }
 }

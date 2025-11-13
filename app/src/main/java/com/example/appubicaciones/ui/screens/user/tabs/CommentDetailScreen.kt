@@ -1,39 +1,91 @@
 package com.example.appubicaciones.ui.screens.user.tabs
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appubicaciones.R
+import com.example.appubicaciones.data.model.PlaceReply
+import com.example.appubicaciones.ui.screens.comments.CommentCard
+import com.example.appubicaciones.viewmodel.CommentViewModel
 
 @Composable
 fun CommentDetailScreen(
-    placeName: String = stringResource(R.string.comment_detail_default_place),
-    userName: String = stringResource(R.string.comment_detail_default_user),
-    comment: String = stringResource(R.string.comment_detail_default_comment),
-    responses: List<Pair<String, String>> = listOf(
-        stringResource(R.string.comment_detail_default_user) to stringResource(R.string.comment_detail_default_response),
-        stringResource(R.string.comment_detail_default_user) to stringResource(R.string.comment_detail_default_response)
-    ),
-    onRespondClick: () -> Unit = {}
+    placeId: String,
+    commentId: String,
+    userId: String,
+    userName: String,
+    onBack: () -> Unit = {}
 ) {
+
+    val commentViewModel: CommentViewModel = viewModel()
+    val selectedComment by commentViewModel.selectedComment.collectAsState()
+    val replies by commentViewModel.replies.collectAsState()
+    val scrollState = rememberScrollState()
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var replyToDeleteId by remember { mutableStateOf<String?>(null) }
+
+    // Cargar respuestas del comentario actual
+    LaunchedEffect(commentId) {
+        commentViewModel.loadComment(commentId)
+        commentViewModel.loadReplies(commentId)
+    }
+
+    var replyText by remember { mutableStateOf("") }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Eliminar respuesta") },
+            text = { Text("¿Estás seguro de que quieres eliminar esta respuesta?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        replyToDeleteId?.let { id ->
+                            commentViewModel.deleteReply(id, commentId)
+                        }
+                        showDeleteDialog = false
+                        replyToDeleteId = null
+                    }
+                ) {
+                    Text("Eliminar", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF0F0F0))
             .padding(vertical = 12.dp)
+            .verticalScroll(scrollState)
     ) {
         // Título
         Text(
@@ -45,130 +97,166 @@ fun CommentDetailScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Lugar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = placeName,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        }
-
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Comentario principal
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF4FF))
-        ) {
-            Row(
-                modifier = Modifier.padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Avatar
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFD1C4E9)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = userName.first().uppercase(),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
+        // Comentario original
 
-                Spacer(modifier = Modifier.width(12.dp))
+        if (selectedComment != null) {
+            Text(
+                text = "Comentario Original:",
+                style = MaterialTheme.typography.labelLarge,
+                color = Color.Gray,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
 
-                Column {
-                    Text(
-                        text = userName,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp
-                    )
-                    Text(
-                        text = comment,
-                        fontSize = 13.sp,
-                        color = Color.DarkGray
-                    )
-                }
+            // Reutilizamos tu CommentCard.
+            // El onClick lo dejamos vacío porque ya estamos en el detalle.
+            CommentCard(
+                userName = selectedComment!!.userName ?: "Usuario desconocido",
+                comment = selectedComment!!.commentText,
+                isOwner = false,
+                showArrow = false,
+                showDelete = false,
+                onDeleteClick = {},
+                onClick = { }
+            )
+        } else {
+            // Skeleton loading o texto de carga
+            Box(modifier = Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center){
+                CircularProgressIndicator(modifier = Modifier.size(24.dp))
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Divider(modifier = Modifier.padding(vertical = 16.dp), color = Color.LightGray)
 
-        // Sección de respuestas
+
         Text(
-            text = stringResource(R.string.comment_detail_responses),
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            text = "Respuestas:",
+            style = MaterialTheme.typography.labelLarge,
+            color = Color.Gray,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        // 🔹 Listado de respuestas
+        if (replies.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Aún no hay respuestas.", color = Color.Gray)
+            }
+        } else {
+            replies.forEach { reply ->
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            itemsIndexed(responses) { _, (name, response) ->
-                ResponseCard(userName = name, response = response)
+                val isOwner = (reply.userId == userId && userId.isNotEmpty())
+                ReplyCard(
+                    userName = reply.userName,
+                    replyText = reply.replyText,
+                    isOwner = isOwner,
+                    onDeleteClick = {
+                        replyToDeleteId = reply.id
+                        showDeleteDialog = true
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
-        // Botón Responder
-        Button(
-            onClick = onRespondClick,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD1C4E9)),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.comment_detail_reply_button),
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // 🔹 Campo para escribir nueva respuesta
+        if (userId.isNotEmpty()) {
+            OutlinedTextField(
+                value = replyText,
+                onValueChange = { replyText = it },
+                label = { Text("Escribe una respuesta...") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = false
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    if (replyText.isNotBlank()) {
+                        val newReply = PlaceReply(
+                            replyText = replyText,
+                            date = System.currentTimeMillis().toString(),
+                            placeCommentId = commentId,
+                            userId = userId,
+                            userName = userName
+                        )
+                        commentViewModel.addReply(newReply)
+                        replyText = "" // limpiar campo
+                    }
+                },
+                modifier = Modifier.align(Alignment.End),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF673AB7))
+            ) {
+                Icon(Icons.Default.Send, contentDescription = "Enviar")
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Enviar")
+            }
+        } else {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "Debes iniciar sesión para responder.",
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ResponseCard(
-    userName: String,
-    response: String
+fun ReplyCard(
+    userName: String?,
+    replyText: String,
+    isOwner: Boolean,
+    onDeleteClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF4FF))
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = userName,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
-            Text(
-                text = response,
-                fontSize = 13.sp,
-                color = Color.DarkGray
-            )
+            // Fila para el Nombre y el Ícono de eliminar
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (userName != null) {
+                    Text(
+                        text = userName,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                        modifier = Modifier.weight(1f) // Empuja el ícono a la derecha
+                    )
+                }
+
+                // Solo mostramos el ícono si es el dueño
+                if (isOwner) {
+                    Icon(
+                        imageVector = Icons.Default.Delete, // Asegúrate de importar Icons.Default.Delete
+                        contentDescription = "Eliminar respuesta",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onDeleteClick() }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(replyText, fontSize = 14.sp)
         }
     }
 }

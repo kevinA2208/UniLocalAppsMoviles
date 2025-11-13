@@ -134,39 +134,6 @@ fun SearchPlacesScreen(
                     style = ty.labelLarge,
                     color = cs.onSurfaceVariant
                 )
-                Spacer(Modifier.height(8.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        stringResource(R.string.search_places_distance_label),
-                        modifier = Modifier.weight(1f),
-                        color = cs.onSurface
-                    )
-                    OutlinedTextField(
-                        value = distance.toString(),
-                        onValueChange = { v -> v.toIntOrNull()?.let { distance = it.coerceIn(0, 999) } },
-                        modifier = Modifier.width(90.dp),
-                        singleLine = true
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    ExposedDropdownMenuBox(expanded = unitExpanded, onExpandedChange = { unitExpanded = it }) {
-                        OutlinedTextField(
-                            value = unit,
-                            onValueChange = {},
-                            readOnly = true,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(unitExpanded) },
-                            modifier = Modifier.menuAnchor().width(90.dp)
-                        )
-                        ExposedDropdownMenu(expanded = unitExpanded, onDismissRequest = { unitExpanded = false }) {
-                            listOf("Km", "m").forEach { u ->
-                                DropdownMenuItem(
-                                    text = { Text(u) },
-                                    onClick = { unit = u; unitExpanded = false }
-                                )
-                            }
-                        }
-                    }
-                }
 
                 Spacer(Modifier.height(20.dp))
 

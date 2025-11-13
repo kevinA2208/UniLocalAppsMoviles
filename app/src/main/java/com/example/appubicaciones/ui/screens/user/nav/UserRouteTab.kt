@@ -49,10 +49,8 @@ sealed class UserRouteTab {
     data class PlaceComments(val placeId: String) : UserRouteTab()
 
     @Serializable
-    data class CommentDetail(val placeId: String, val commentId: Int) : UserRouteTab()
+    data class CommentDetail(val placeId: String, val commentId: String) : UserRouteTab()
 
-    @Serializable
-    data class CommentResponse(val commentId: Int) : UserRouteTab()
     @Serializable
     data object SearchPlaces : UserRouteTab()
 

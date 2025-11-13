@@ -5,7 +5,8 @@ data class PlaceComment(
     val commentText: String = "",
     val date: String = "",
     val placeId: String = "",
-    val userId: String = ""
+    val userId: String = "",
+    val userName: String? = null
 )
 
 data class PlaceReply(
@@ -13,5 +14,6 @@ data class PlaceReply(
     val replyText: String = "",
     val date: String = "",
     val placeCommentId: String = "",
-    val userId: String = ""
+    val userId: String = "",
+    val userName: String? = null
 )
