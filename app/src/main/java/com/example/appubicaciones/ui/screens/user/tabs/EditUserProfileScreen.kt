@@ -1,5 +1,6 @@
 package com.example.appubicaciones.ui.screens.user.tabs
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,13 +16,14 @@ import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.City
 import com.example.appubicaciones.ui.screens.generics.DropdownSelector
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditUserProfileScreen(
-    initialNames: String = "Kevin Andres",
-    initialLastnames: String = "Usama Trespalacios",
-    initialUsername: String = "KevinA2208",
-    initialCity: String = "Armenia",
+    initialNames: String,
+    initialLastnames: String,
+    initialUsername: String,
+    initialCity: String,
     onSaveClick: (names: String, lastnames: String, username: String, city: String) -> Unit = { _, _, _, _ -> }
 ) {
     val scrollState = rememberScrollState()
@@ -32,6 +34,16 @@ fun EditUserProfileScreen(
     var username by remember { mutableStateOf(initialUsername) }
     var selectedCity by remember { mutableStateOf(City.entries.first { it.displayName == initialCity }) }
 
+    val hasChanges by derivedStateOf {
+        names != initialNames ||
+                lastnames != initialLastnames ||
+                username != initialUsername ||
+                selectedCity.displayName != initialCity
+    }
+
+    val isFormValid by derivedStateOf {
+        names.isNotBlank() && lastnames.isNotBlank() && username.isNotBlank()
+    }
 
     Column(
         modifier = Modifier
@@ -65,8 +77,10 @@ fun EditUserProfileScreen(
 
         Button(
             onClick = { onSaveClick(names, lastnames, username, selectedCity.displayName) },
+            enabled = hasChanges && isFormValid,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF7237EC)
+                containerColor = Color(0xFF7237EC),
+                disabledContainerColor = Color.LightGray
             ),
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {

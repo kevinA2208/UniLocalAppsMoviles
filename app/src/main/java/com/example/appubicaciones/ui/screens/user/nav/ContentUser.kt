@@ -32,6 +32,7 @@ import com.example.appubicaciones.config.RouteScreen
 import com.example.appubicaciones.data.mocks.listProductsServices
 import com.example.appubicaciones.data.mocks.approvedPlaces
 import com.example.appubicaciones.data.mocks.mockPlaces
+import com.example.appubicaciones.data.model.City
 import com.example.appubicaciones.ui.screens.LoginScreen
 import com.example.appubicaciones.ui.screens.services.CreateProductServiceScreen
 import com.example.appubicaciones.ui.screens.services.DetailProductServiceScreen
@@ -62,7 +63,8 @@ fun ContentUser(
     rootNavController: NavHostController,
     isLoggedIn: Boolean,
     onLoginSuccess: () -> Unit,
-    openCreate: Boolean = false
+    openCreate: Boolean = false,
+    onLogout: () -> Unit
 ) {
     LaunchedEffect(openCreate, isLoggedIn) {
         if (openCreate && isLoggedIn) {
@@ -193,14 +195,38 @@ fun ContentUser(
 
         composable<UserRouteTab.UserProfile> {
 
-            if(isLoggedIn){
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val isLoading by userViewModel.isLoading.collectAsState()
+            val isSuccess by userViewModel.isSuccess.collectAsState()
+            val errorMessage by userViewModel.errorMessage.collectAsState()
+
+            if (isSuccess && currentUser != null) {
+                // Usuario autenticado correctamente
                 UserProfileScreen(
+                    names = currentUser?.names ?: "",
+                    lastnames = currentUser?.lastnames ?: "",
+                    username = currentUser?.username ?: "",
+                    email = currentUser?.email ?: "",
+                    city = currentUser?.city?.displayName ?: "",
                     tabNavController = tabNavController,
                     onEditClick = { tabNavController.navigate(UserRouteTab.EditProfile) },
                     onRecoverPasswordClick = { rootNavController.navigate(RouteScreen.RecoverPassword) },
-                    onHistoryClick = { tabNavController.navigate(UserRouteTab.UserCreatedPlaces) }
+                    onHistoryClick = { tabNavController.navigate(UserRouteTab.UserCreatedPlaces) },
+                    onLogoutClick = {
+                        // Limpiar datos en Firebase y memoria
+                        userViewModel.logoutUser()
+
+                        // Mover la pestaña interna al Mapa (para que no se quede en Profile)
+                        tabNavController.navigate(UserRouteTab.Map) {
+                            popUpTo(UserRouteTab.Map) { inclusive = true }
+                        }
+
+                        // Avisar al Root que ya no estamos logueados (para ocultar favoritos, etc.)
+                        onLogout()
+                    }
                 )
             } else {
+                // Usuario no autenticado → mostrar pantalla de login
                 LoginScreen(
                     onRegisterClick = {
                         rootNavController.navigate(RouteScreen.Register)
@@ -214,12 +240,6 @@ fun ContentUser(
                         rootNavController.navigate(RouteScreen.RecoverPassword)
                     }
                 )
-
-                if (isSuccess) {
-                    onLoginSuccess()
-                    tabNavController.navigate(UserRouteTab.UserProfile)
-
-                }
 
                 errorMessage?.let {
                     Log.e("Login", "Error al iniciar sesión: $it")
@@ -237,11 +257,32 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.EditProfile> {
-            EditUserProfileScreen(
-                onSaveClick = { names, lastnames, username, city ->
-                    tabNavController.popBackStack()
-                }
-            )
+            val currentUser by userViewModel.currentUser.collectAsState()
+
+            currentUser?.let { user ->
+                EditUserProfileScreen(
+                    initialNames = user.names,
+                    initialLastnames = user.lastnames,
+                    initialUsername = user.username,
+                    initialCity = user.city.displayName,
+                    onSaveClick = { names, lastnames, username, city ->
+
+                        val updatedUser = user.copy(
+                            names = names,
+                            lastnames = lastnames,
+                            username = username,
+                            city = City.entries.first { it.displayName == city }
+                        )
+
+                        userViewModel.updateUser(updatedUser) { success ->
+                            if (success) {
+                                userViewModel.loadCurrentUser() // 🔄 Recarga el usuario actualizado
+                                tabNavController.popBackStack() // ⬅️ Regresa al perfil
+                            }
+                        }
+                    }
+                )
+            }
         }
 
         composable<UserRouteTab.Services> {
@@ -289,13 +330,6 @@ fun ContentUser(
                     onDeletePlace = { /* TODO */ }
                 )
             }
-        }
-        composable<UserRouteTab.EditProfile> {
-            EditUserProfileScreen(
-                onSaveClick = { names, lastnames, username, city ->
-                    tabNavController.popBackStack()
-                }
-            )
         }
 
         composable<UserRouteTab.SearchPlaces> {

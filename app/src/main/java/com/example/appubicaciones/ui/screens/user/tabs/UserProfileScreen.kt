@@ -16,18 +16,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.appubicaciones.R
+import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 
 @Composable
 fun UserProfileScreen(
-    names: String = "Kevin Andres",
-    lastnames: String = "Usama Trespacios",
-    username: String = "KevinA2208",
-    email: String = "usuario@gmail.com",
-    city: String = "Armenia",
+    names: String,
+    lastnames: String,
+    username: String,
+    email: String,
+    city: String,
     tabNavController: NavHostController,
     onEditClick: () -> Unit = {},
     onRecoverPasswordClick: () -> Unit = {},
-    onHistoryClick: () -> Unit = {}
+    onHistoryClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
 
     val scrollState = rememberScrollState()
@@ -97,6 +99,21 @@ fun UserProfileScreen(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(stringResource(R.string.profile_places_created))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Botón Cerrar sesión
+        OutlinedButton(
+            onClick = {
+                onLogoutClick()
+            },
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color.Red
+            ),
+            border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
+        ) {
+            Text(text = stringResource(R.string.logout_button_text))
         }
     }
 }

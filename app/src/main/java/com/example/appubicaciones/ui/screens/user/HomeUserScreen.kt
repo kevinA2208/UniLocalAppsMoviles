@@ -19,7 +19,8 @@ fun HomeUserScreen(
     isLoggedIn: Boolean,
     onLoginSuccess: () -> Unit,
     rootNavController: NavHostController,
-    openCreate: Boolean = false
+    openCreate: Boolean = false,
+    onLogout: () -> Unit = {}
 ){
 
     val tabNavController = rememberNavController()
@@ -41,7 +42,8 @@ fun HomeUserScreen(
             rootNavController = rootNavController,
             isLoggedIn = isLoggedIn,
             onLoginSuccess = onLoginSuccess,
-            openCreate = openCreate
+            openCreate = openCreate,
+            onLogout = onLogout
         )
     }
 }

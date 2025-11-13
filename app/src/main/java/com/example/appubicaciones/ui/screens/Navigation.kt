@@ -91,7 +91,11 @@ fun Navigation() {
                 isLoggedIn = isLoggedIn,
                 onLoginSuccess = { isLoggedIn = true },
                 rootNavController = navController,
-                openCreate = args.openCreate
+                openCreate = args.openCreate,
+                onLogout = {
+                    isLoggedIn = false
+
+                }
             )
         }
 
