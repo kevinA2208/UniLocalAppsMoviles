@@ -56,6 +56,7 @@ import com.example.appubicaciones.ui.screens.user.tabs.UserFavoritesScreen
 import com.example.appubicaciones.ui.screens.user.tabs.UserProfileScreen
 import com.example.appubicaciones.viewmodel.FavoritePlaceViewModel
 import com.example.appubicaciones.viewmodel.PlaceViewModel
+import com.example.appubicaciones.viewmodel.ProductServiceViewModel
 import com.example.appubicaciones.viewmodel.UserViewModel
 
 @Composable
@@ -77,6 +78,7 @@ fun ContentUser(
     val userViewModel: UserViewModel = viewModel()
     val placeViewModel: PlaceViewModel = viewModel()
     val favoritePlaceViewModel: FavoritePlaceViewModel = viewModel()
+    val productServiceViewModel: ProductServiceViewModel = viewModel()
 
     val isLoading by userViewModel.isLoading.collectAsState()
     val isSuccess by userViewModel.isSuccess.collectAsState()
@@ -257,12 +259,6 @@ fun ContentUser(
             )
 
         }
-        composable<UserRouteTab.Services> {
-            ServiceScreen(
-                navController = tabNavController,
-                products = mockProductServices
-            )
-        }
 
         composable<UserRouteTab.UserProfile> {
 
@@ -368,19 +364,59 @@ fun ContentUser(
             }
         }
 
-        composable<UserRouteTab.Services> {
+        composable<UserRouteTab.Services> { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getString("placeId") ?: ""
+            val products by productServiceViewModel.products.collectAsState()
+            val place by placeViewModel.selectedPlace.collectAsState()
+            val currentUser by userViewModel.currentUser.collectAsState()
             ServiceScreen(
                 navController = tabNavController,
-                products = mockProductServices,
-                onViewDetailProduct = { tabNavController.navigate(UserRouteTab.DetailProductService) }
+                products = products,
+                placeId = placeId,
+                placeOwnerId = place?.userId,
+                currentUserId = currentUser?.id,
+                onRefreshProducts = {
+                    productServiceViewModel.loadProductsForPlace(placeId)
+                },
+                onViewDetailProduct = { productId ->
+                    tabNavController.navigate(UserRouteTab.DetailProductService(productId))
+                }
             )
         }
 
-        composable<UserRouteTab.DetailProductService> {
-            DetailProductServiceScreen(
-                navController = tabNavController,
-                product = mockProductServices.get(0)
-            )
+        composable<UserRouteTab.DetailProductService> { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
+
+            val product by productServiceViewModel.selectedProduct.collectAsState()
+            val place by placeViewModel.selectedPlace.collectAsState()
+            val currentUser by userViewModel.currentUser.collectAsState()
+
+            LaunchedEffect(productId) {
+                productServiceViewModel.loadProductById(productId)
+            }
+
+            LaunchedEffect(product?.placeId) {
+                product?.placeId?.let { placeId ->
+                    placeViewModel.getPlaceById(placeId)
+                }
+            }
+
+            if (product != null) {
+                DetailProductServiceScreen(
+                    navController = tabNavController,
+                    product = product!!,
+                    placeOwnerId = place!!.userId,
+                    currentUserId = currentUser?.id,
+                    onDeleteProduct = {
+                        productServiceViewModel.deleteProduct(product!!.id)
+                        tabNavController.popBackStack()
+                    }
+                )
+            } else {
+                Box(Modifier.fillMaxSize(), Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
         }
 
         composable<UserRouteTab.AddImageProductService> {
@@ -389,14 +425,19 @@ fun ContentUser(
             )
         }
 
-        composable<UserRouteTab.CreateProductService> {
+        composable<UserRouteTab.CreateProductService> { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getString("placeId") ?: ""
+
             CreateProductServiceScreen(
-                navController = tabNavController
-            ) { nuevo ->
-                /* TODO */
-//                mockProductServices = mockProductServices + nuevo
-            }
+                navController = tabNavController,
+                placeId = placeId,
+                onGuardar = { nuevo ->
+                    val product = nuevo.copy(placeId = placeId)
+                    productServiceViewModel.createProduct(product)
+                }
+            )
         }
+
 
         composable<UserRouteTab.PlaceDetail> { backStackEntry ->
             val placeId = backStackEntry.arguments?.getString("placeId") ?: return@composable
@@ -423,7 +464,8 @@ fun ContentUser(
                         tabNavController.navigate(UserRouteTab.PlaceComments(place!!.id))
                     },
                     onViewProducts = {
-                        tabNavController.navigate(UserRouteTab.Services)
+                        productServiceViewModel.loadProductsForPlace(place!!.id)
+                        tabNavController.navigate(UserRouteTab.Services(place!!.id))
                     },
                     onDeletePlace = {
                         currentUser?.id?.let { userId ->

@@ -16,8 +16,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -36,7 +42,41 @@ import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailProductServiceScreen(navController: NavController, product: ProductService) {
+fun DetailProductServiceScreen(
+    navController: NavController,
+    product: ProductService,
+    placeOwnerId: String?,
+    currentUserId: String?,
+    onDeleteProduct: () -> Unit
+) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Diálogo de confirmación
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmar eliminación") },
+            text = { Text("¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        onDeleteProduct()
+                        navController.popBackStack() // Regresar luego de eliminar
+                    }
+                ) {
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,17 +92,17 @@ fun DetailProductServiceScreen(navController: NavController, product: ProductSer
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(UserRouteTab.DetailProductService)
-                },
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = Color.White
-            ) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.detail_product_service_delete)
-                )
+            if (currentUserId != null && currentUserId == placeOwnerId) {
+                FloatingActionButton(
+                    onClick = { showDialog = true },
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = Color.White
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.detail_product_service_delete)
+                    )
+                }
             }
         }
     ) { padding ->
@@ -78,13 +118,27 @@ fun DetailProductServiceScreen(navController: NavController, product: ProductSer
                     .padding(vertical = 16.dp)
             )
 
-            Image(
-                painter = rememberAsyncImagePainter(product.images.firstOrNull()),
-                contentDescription = product.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-            )
+            val firstImage = product.images.firstOrNull()
+
+            if (firstImage != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(firstImage),
+                    contentDescription = product.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                )
+            } else {
+                Text(
+                    text = "Este producto no tiene imágenes disponibles.",
+                    color = Color.Gray,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Spacer(Modifier.height(12.dp))
 

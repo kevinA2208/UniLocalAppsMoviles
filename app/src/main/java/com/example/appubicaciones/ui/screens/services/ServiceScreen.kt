@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +35,18 @@ import okhttp3.OkHttpClient
 fun ServiceScreen(
     navController: NavController,
     products: List<ProductService>,
-    onViewDetailProduct: () -> Unit = {},
+    onViewDetailProduct: (String) -> Unit = {},
+    onRefreshProducts: () -> Unit,
+    placeId: String,
+    placeOwnerId: String?,
+    currentUserId: String?,
 ) {
+
+    LaunchedEffect(placeId) {
+        onRefreshProducts()
+    }
+
+
     val context = LocalContext.current
     val imageLoader = remember {
         val client = OkHttpClient.Builder()
@@ -61,13 +72,15 @@ fun ServiceScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navController.navigate(UserRouteTab.CreateProductService)
-            }) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(R.string.services_add)
-                )
+            if (currentUserId != null && currentUserId == placeOwnerId) {
+                FloatingActionButton(onClick = {
+                    navController.navigate(UserRouteTab.CreateProductService(placeId))
+                }) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(R.string.services_add)
+                    )
+                }
             }
         }
     ) { padding ->
@@ -87,45 +100,62 @@ fun ServiceScreen(
                     .padding(vertical = 16.dp)
             )
 
-            LazyColumn(contentPadding = padding) {
-                items(products) { product ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clickable { onViewDetailProduct() }
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(context)
-                                    .data(product.images.firstOrNull())
-                                    .crossfade(true)
-                                    .listener(
-                                        onError = { _, result ->
-                                            Log.e("Coil", "Error cargando ${product.name}: ${result.throwable}")
-                                        }
-                                    )
-                                    .build(),
-                                imageLoader = imageLoader,
-                                contentDescription = product.name,
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .padding(4.dp),
-                                contentScale = ContentScale.Fit
-                            )
-                            Text(
-                                text = product.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(end = 8.dp)
-                            )
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = stringResource(R.string.services_view_detail),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(all = 8.dp)
-                            )
+            if (products.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No hay productos o servicios registrados para este lugar.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(contentPadding = padding) {
+                    items(products) { product ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .clickable { onViewDetailProduct(product.id) }
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(product.images.firstOrNull())
+                                        .crossfade(true)
+                                        .listener(
+                                            onError = { _, result ->
+                                                Log.e(
+                                                    "Coil",
+                                                    "Error cargando ${product.name}: ${result.throwable}"
+                                                )
+                                            }
+                                        )
+                                        .build(),
+                                    imageLoader = imageLoader,
+                                    contentDescription = product.name,
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .padding(4.dp),
+                                    contentScale = ContentScale.Fit
+                                )
+                                Text(
+                                    text = product.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(end = 8.dp)
+                                )
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = stringResource(R.string.services_view_detail),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(all = 8.dp)
+                                )
+                            }
                         }
                     }
                 }

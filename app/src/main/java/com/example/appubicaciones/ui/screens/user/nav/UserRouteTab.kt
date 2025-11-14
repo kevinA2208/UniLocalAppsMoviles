@@ -21,13 +21,13 @@ sealed class UserRouteTab {
     data object CreatePlace : UserRouteTab()
 
     @Serializable
-    data object Services : UserRouteTab()
+    data class Services(val placeId: String) : UserRouteTab()
 
     @Serializable
-    data object  DetailProductService : UserRouteTab()
+    data class DetailProductService(val productId: String)
 
     @Serializable
-    data object CreateProductService: UserRouteTab()
+    data class CreateProductService(val placeId: String) : UserRouteTab()
 
     @Serializable
     data object AddImageProductService: UserRouteTab()

@@ -23,16 +23,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.ProductService
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
+import com.example.appubicaciones.viewmodel.ProductServiceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProductServiceScreen(
     navController: NavController,
-    onGuardar: (ProductService) -> Unit
+    placeId: String,
+    onGuardar: (ProductService) -> Unit,
+    productViewModel: ProductServiceViewModel = viewModel()
 ) {
     val scrollState = rememberScrollState()
 
@@ -45,9 +49,20 @@ fun CreateProductServiceScreen(
     var descriptionError by remember { mutableStateOf(false) }
     var priceError by remember { mutableStateOf(false) }
 
+    val isLoading by productViewModel.isLoading.collectAsState()
+    val isSuccess by productViewModel.isSuccess.collectAsState()
+    val errorMessage by productViewModel.errorMessage.collectAsState()
+
     val isFormValid = name.isNotBlank() &&
             description.isNotBlank() &&
             (!applyPrice || (price.toDoubleOrNull() != null && price.toDouble() > 0))
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            productViewModel.resetStatus()
+            navController.popBackStack()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -74,7 +89,8 @@ fun CreateProductServiceScreen(
                                 name = name,
                                 description = description,
                                 applyPrice = applyPrice,
-                                price = price.toDoubleOrNull()
+                                price = price.toDoubleOrNull(),
+                                placeId = placeId
                             )
                         )
                         navController.popBackStack()
@@ -97,6 +113,13 @@ fun CreateProductServiceScreen(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    color = Color.Red,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
             Text(
                 text = stringResource(R.string.txt_create_product_services),
