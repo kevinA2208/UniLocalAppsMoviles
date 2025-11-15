@@ -39,6 +39,14 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.ProductService
 import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,94 +88,109 @@ fun DetailProductServiceScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.detail_product_service_back)) },
+                title = {
+                    Text(
+                        "Detalle",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.detail_product_service_back_content_description)
+                            contentDescription = "Volver"
                         )
                     }
                 }
             )
         },
         floatingActionButton = {
-            if (currentUserId != null && currentUserId == placeOwnerId) {
+            if (currentUserId == placeOwnerId) {
                 FloatingActionButton(
                     onClick = { showDialog = true },
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = Color.White
                 ) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.detail_product_service_delete)
-                    )
+                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
                 }
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
 
-            Text(
-                text = stringResource(R.string.detail_product_service_title),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            )
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+        ) {
 
-            val firstImage = product.images.firstOrNull()
-
-            if (firstImage != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(firstImage),
-                    contentDescription = product.name,
+            // ----------------------
+            //     Galería
+            // ----------------------
+            if (product.images.isNotEmpty()) {
+                LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
-                )
+                        .height(240.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(product.images) { imageUrl ->
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = product.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .width(320.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                        )
+                    }
+                }
             } else {
                 Text(
-                    text = "Este producto no tiene imágenes disponibles.",
-                    color = Color.Gray,
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    textAlign = TextAlign.Center
+                    "Este producto no tiene imágenes.",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
                 )
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.detail_product_service_name_label))
-                    }
-                    append(product.name)
-                }
-            )
+            // ----------------------
+            //      Card bonita
+            // ----------------------
+            androidx.compose.material3.Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
 
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.detail_product_service_description_label))
-                    }
-                    append(product.description)
-                }
-            )
+                    Text(
+                        product.name,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(R.string.detail_product_service_price_label))
-                    }
-                    append(product.price?.toString() ?: stringResource(R.string.detail_product_service_price_na))
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = product.description,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Precio: ") }
+                            append(product.price?.toString() ?: "N/A")
+                        },
+                        fontSize = 16.sp
+                    )
                 }
-            )
+            }
         }
     }
 }

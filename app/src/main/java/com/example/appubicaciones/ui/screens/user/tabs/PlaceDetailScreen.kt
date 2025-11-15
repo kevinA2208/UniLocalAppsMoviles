@@ -2,6 +2,8 @@ package com.example.appubicaciones.ui.screens.user.tabs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,12 +22,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.appubicaciones.data.model.Place
 import androidx.compose.material.icons.outlined.Star as StarOutline
 import com.example.appubicaciones.R
@@ -70,19 +75,40 @@ fun PlaceDetailScreen(
                 .padding(bottom = 12.dp)
         )
 
-        // Imagen o texto si no hay imagen disponible (por ahora solo texto)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp)
-                .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.place_detail_no_images),
-                color = Color.Gray,
-                style = MaterialTheme.typography.bodyMedium
-            )
+        if (place.images.isNotEmpty()) {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp), // Le damos un poco más de altura
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(place.images) { imageUrl ->
+                    AsyncImage(
+                        model = imageUrl, // Coil carga la URL de Cloudinary
+                        contentDescription = stringResource(R.string.place_detail_image_desc, place.name),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .fillParentMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
+            }
+        } else {
+            // Si no hay imágenes, mostramos el placeholder original
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.place_detail_no_images),
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -149,16 +175,6 @@ fun PlaceDetailScreen(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Estado
-        val color = Color(0xFF388E3C)
-        Text(
-            text = stringResource(R.string.place_detail_open),
-            color = color,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         // Descripción
         Text(
             text = stringResource(R.string.place_detail_description, place.description),
@@ -202,31 +218,6 @@ fun PlaceDetailScreen(
             text = stringResource(R.string.place_detail_phone, place.phone),
             fontSize = 15.sp
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Calificaciones (mock de estrellas)
-        Text(
-            text = stringResource(R.string.place_detail_calification),
-            fontWeight = FontWeight.Bold
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(vertical = 4.dp)
-        ) {
-            repeat(4) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Star",
-                    tint = Color(0xFFFFD700)
-                )
-            }
-            Icon(
-                imageVector = Icons.Outlined.StarOutline,
-                contentDescription = "Star outline",
-                tint = Color(0xFFFFD700)
-            )
-        }
 
         Spacer(modifier = Modifier.height(12.dp))
 

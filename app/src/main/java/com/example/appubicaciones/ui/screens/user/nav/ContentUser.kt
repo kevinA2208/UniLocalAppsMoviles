@@ -13,9 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.*
@@ -75,6 +73,8 @@ fun ContentUser(
         }
     }
 
+    val context = LocalContext.current
+
     val userViewModel: UserViewModel = viewModel()
     val placeViewModel: PlaceViewModel = viewModel()
     val favoritePlaceViewModel: FavoritePlaceViewModel = viewModel()
@@ -131,7 +131,7 @@ fun ContentUser(
                 pickedImages = pickedUris,
                 onAddImagesClick = { tabNavController.navigate(UserRouteTab.AddImages) },
                 onLoadLocationClick = { tabNavController.navigate(UserRouteTab.AddLocation) },
-                onSaveClick = { name, description, dayFrom, dayTo, openHour, closeHour, phones, category, address ->
+                onSaveClick = { name, description, dayFrom, dayTo, openHour, closeHour, phones, category, address, images ->
                     val newPlace = Place(
                         name = name,
                         description = description,
@@ -144,7 +144,7 @@ fun ContentUser(
                         address = address,
                         verification_completed = false
                     )
-                    placeViewModel.createPlace(newPlace)
+                    placeViewModel.createPlace(newPlace, images, context)
                 }
             )
 
@@ -420,21 +420,57 @@ fun ContentUser(
         }
 
         composable<UserRouteTab.AddImageProductService> {
+            val prevStrings = tabNavController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<List<String>>("picked_product_images")
+                ?: emptyList()
+            val prevUris = prevStrings.map(Uri::parse)
+
             AddImageProductServiceScreen(
-                navController = tabNavController
+                initialImages = prevUris,
+                onSaveImages = { uris ->
+                    tabNavController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("picked_product_images", uris.map { it.toString() })
+                    tabNavController.popBackStack()
+                },
+                onBack = { tabNavController.popBackStack() }
             )
         }
 
         composable<UserRouteTab.CreateProductService> { backStackEntry ->
             val placeId = backStackEntry.arguments?.getString("placeId") ?: ""
+            val imgsFlow = backStackEntry
+                .savedStateHandle
+                .getStateFlow("picked_product_images", emptyList<String>())
+            val pickedImageStrings by imgsFlow.collectAsStateWithLifecycle()
+            val pickedUris = remember(pickedImageStrings) { pickedImageStrings.map(Uri::parse) }
+
+            val isLoading by productServiceViewModel.isLoading.collectAsState()
+            val isSuccess by productServiceViewModel.isSuccess.collectAsState()
+            val errorMessage by productServiceViewModel.errorMessage.collectAsState()
+
+            LaunchedEffect(isSuccess) {
+                if (isSuccess) {
+                    productServiceViewModel.resetStatus()
+
+                    tabNavController.popBackStack()
+                }
+            }
 
             CreateProductServiceScreen(
                 navController = tabNavController,
                 placeId = placeId,
-                onGuardar = { nuevo ->
-                    val product = nuevo.copy(placeId = placeId)
-                    productServiceViewModel.createProduct(product)
-                }
+                pickedImages = pickedUris,
+                onAddImagesClick = {
+                    tabNavController.navigate(UserRouteTab.AddImageProductService)
+                },
+                onSaveClick = { product, images ->
+                    // Llama al ViewModel
+                    productServiceViewModel.createProduct(product, images, context)
+                },
+                isLoading = isLoading,
+                errorMessage = errorMessage
             )
         }
 

@@ -23,10 +23,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.appubicaciones.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddImageProductServiceScreen(navController: NavController) {
-    var images by remember { mutableStateOf(listOf<Uri>()) }
-    var index by remember { mutableStateOf(0) }
+fun AddImageProductServiceScreen(
+    initialImages: List<Uri> = emptyList(),
+    onSaveImages: (List<Uri>) -> Unit,
+    onBack: () -> Unit = {}
+) {
+    var images by remember { mutableStateOf(initialImages) }
+    var index by remember { mutableStateOf(if (initialImages.isNotEmpty()) initialImages.lastIndex else 0) }
 
     val pickImage = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -38,12 +43,26 @@ fun AddImageProductServiceScreen(navController: NavController) {
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.add_images_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.add_images_back)
+                        )
+                    }
+                }
+            )
+        },
         bottomBar = {
             Button(
-                onClick = { navController.popBackStack() },
+                onClick = { onSaveImages(images) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                enabled = images.isNotEmpty()
             ) {
                 Text(stringResource(R.string.add_images_save))
             }

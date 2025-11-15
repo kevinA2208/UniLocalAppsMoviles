@@ -5,13 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.appubicaciones.data.model.Place
 import com.example.appubicaciones.data.model.PlaceCategory
 import com.example.appubicaciones.data.repository.PlaceRepository
+import com.example.appubicaciones.data.repository.CloudinaryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import android.content.Context
+import android.net.Uri
 
 class PlaceViewModel(
     private val repository: PlaceRepository = PlaceRepository()
 ) : ViewModel() {
+
+    private val cloudinaryRepository = CloudinaryRepository()
 
     private val _places = MutableStateFlow<List<Place>>(emptyList())
     val places: StateFlow<List<Place>> = _places
@@ -36,19 +41,39 @@ class PlaceViewModel(
 
 
     /** Crear lugar */
-    fun createPlace(place: Place) {
+    fun createPlace(place: Place, imageUris: List<Uri>, context: Context) {
         viewModelScope.launch {
             _isLoading.value = true
             _isSuccess.value = false
             _errorMessage.value = null
 
-            val result = repository.createPlace(place)
-            _isLoading.value = false
+            try {
+                // 1. Subir imágenes a Cloudinary
+                val uploadResult = cloudinaryRepository.uploadImages(imageUris, context, "places_upload")
 
-            result.onSuccess {
-                _isSuccess.value = true
-            }.onFailure {
-                _errorMessage.value = it.message
+                if (uploadResult.isSuccess) {
+                    val imageUrls = uploadResult.getOrNull() ?: emptyList()
+
+                    // 2. Crear el objeto Place con las URLs
+                    val placeWithImages = place.copy(images = imageUrls)
+
+                    // 3. Guardar el Place en Firestore
+                    val createResult = repository.createPlace(placeWithImages)
+                    _isLoading.value = false
+
+                    createResult.onSuccess {
+                        _isSuccess.value = true
+                    }.onFailure {
+                        _errorMessage.value = it.message
+                    }
+                } else {
+                    // La subida a Cloudinary falló
+                    _isLoading.value = false
+                    _errorMessage.value = uploadResult.exceptionOrNull()?.message ?: "Error al subir imágenes"
+                }
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _errorMessage.value = e.message
             }
         }
     }

@@ -90,6 +90,7 @@
     <string name="place_detail_confirm_delete">¿Seguro que deseas eliminar este lugar? Esta acción no se puede deshacer.</string>
     <string name="place_detail_cancel">Cancelar</string>
     <string name="place_detail_delete">Eliminar</string>
+    <string name="place_detail_image_desc">Imagen de %1$s</string>
     
     <!-- Servicios -->
     <string name="txt_services">Lista de productos / Servicios</string>

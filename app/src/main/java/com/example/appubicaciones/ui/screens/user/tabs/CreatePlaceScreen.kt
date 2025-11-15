@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,36 +43,25 @@ fun CreatePlaceScreen(
         closeHour: String,
         phones: String,
         category: PlaceCategory,
-        address: String
+        address: String,
+        images: List<Uri>
     ) -> Unit,
     onLoadLocationClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var openHour by remember { mutableStateOf("") }
-    var closeHour by remember { mutableStateOf("") }
-    var phones by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var openHour by rememberSaveable { mutableStateOf("") }
+    var closeHour by rememberSaveable { mutableStateOf("") }
+    var phones by rememberSaveable { mutableStateOf("") }
 
-    var dayFrom by remember { mutableStateOf(Days.MONDAY) }
-    var dayTo by remember { mutableStateOf(Days.SUNDAY) }
-    var category by remember { mutableStateOf(PlaceCategory.FOOD) }
+    // Para la dirección, necesitamos usar el `initialAddress` que ya recibes
+    var address by rememberSaveable(initialAddress) { mutableStateOf(initialAddress) }
 
-    val selectedImages = remember { mutableStateListOf<Uri>() }
-    val maxImages = 6
-
-    val pickImages = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(maxImages)
-    ) { uris ->
-        selectedImages.clear()
-        selectedImages.addAll(uris.take(maxImages))
-    }
-
-    LaunchedEffect(initialAddress) {
-        if (initialAddress.isNotBlank()) address = initialAddress
-    }
+    var dayFrom by rememberSaveable { mutableStateOf(Days.MONDAY) }
+    var dayTo by rememberSaveable { mutableStateOf(Days.SUNDAY) }
+    var category by rememberSaveable { mutableStateOf(PlaceCategory.FOOD) }
 
     if (pickedImages.isNotEmpty()) {
         Spacer(Modifier.height(6.dp))
@@ -210,7 +200,7 @@ fun CreatePlaceScreen(
             }
         }
 
-        if (selectedImages.isNotEmpty()) {
+        if (pickedImages.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -218,7 +208,7 @@ fun CreatePlaceScreen(
                 maxItemsInEachRow = 3,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                selectedImages.forEachIndexed { index, uri ->
+                pickedImages.forEachIndexed { index, uri ->
                     Box(
                         modifier = Modifier
                             .size(100.dp)
@@ -233,26 +223,9 @@ fun CreatePlaceScreen(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.matchParentSize()
                         )
-                        IconButton(
-                            onClick = { selectedImages.remove(uri) },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .size(24.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.create_place_delete_image),
-                                tint = Color.White
-                            )
-                        }
                     }
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            AssistChip(
-                onClick = { selectedImages.clear() },
-                label = { Text(stringResource(R.string.create_place_remove_all_images)) }
-            )
         }
 
         Spacer(Modifier.height(16.dp))
@@ -261,7 +234,8 @@ fun CreatePlaceScreen(
             onClick = {
                 onSaveClick(
                     name, description, dayFrom, dayTo,
-                    openHour, closeHour, phones, category, address
+                    openHour, closeHour, phones, category, address,
+                    pickedImages.toList()
                 )
             },
             modifier = Modifier.fillMaxWidth(),

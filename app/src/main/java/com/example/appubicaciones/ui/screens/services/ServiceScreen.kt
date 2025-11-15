@@ -113,15 +113,26 @@ fun ServiceScreen(
                     )
                 }
             } else {
-                LazyColumn(contentPadding = padding) {
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     items(products) { product ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
-                                .clickable { onViewDetailProduct(product.id) }
+                                .clickable { onViewDetailProduct(product.id) },
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            )
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(12.dp)
+                            ) {
+
+                                // Imagen
                                 AsyncImage(
                                     model = ImageRequest.Builder(context)
                                         .data(product.images.firstOrNull())
@@ -138,22 +149,43 @@ fun ServiceScreen(
                                     imageLoader = imageLoader,
                                     contentDescription = product.name,
                                     modifier = Modifier
-                                        .size(80.dp)
-                                        .padding(4.dp),
-                                    contentScale = ContentScale.Fit
+                                        .size(90.dp),
+                                    contentScale = ContentScale.Crop
                                 )
-                                Text(
-                                    text = product.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(end = 8.dp)
-                                )
+
+                                Spacer(Modifier.width(16.dp))
+
+                                // Título del producto
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = product.name,
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 18.sp
+                                        )
+                                    )
+
+                                    product.description.takeIf { it.isNotBlank() }?.let {
+                                        Text(
+                                            text = it,
+                                            maxLines = 2,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        )
+                                    }
+                                }
+
+                                Spacer(Modifier.width(8.dp))
+
+                                // Flecha
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = stringResource(R.string.services_view_detail),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(all = 8.dp)
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }

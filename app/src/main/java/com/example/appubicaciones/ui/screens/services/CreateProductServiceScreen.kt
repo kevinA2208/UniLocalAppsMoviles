@@ -1,22 +1,32 @@
 package com.example.appubicaciones.ui.screens.services
 
+import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,44 +35,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.ProductService
-import com.example.appubicaciones.ui.screens.user.nav.UserRouteTab
 import com.example.appubicaciones.viewmodel.ProductServiceViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateProductServiceScreen(
     navController: NavController,
     placeId: String,
-    onGuardar: (ProductService) -> Unit,
-    productViewModel: ProductServiceViewModel = viewModel()
+    pickedImages: List<Uri>,
+    onSaveClick: (ProductService, List<Uri>) -> Unit,
+    onAddImagesClick: () -> Unit,
+    isLoading: Boolean,
+    errorMessage: String?
 ) {
     val scrollState = rememberScrollState()
 
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var applyPrice by remember { mutableStateOf(false) }
-    var price by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var applyPrice by rememberSaveable { mutableStateOf(false) }
+    var price by rememberSaveable { mutableStateOf("") }
 
     var nameError by remember { mutableStateOf(false) }
     var descriptionError by remember { mutableStateOf(false) }
     var priceError by remember { mutableStateOf(false) }
 
-    val isLoading by productViewModel.isLoading.collectAsState()
-    val isSuccess by productViewModel.isSuccess.collectAsState()
-    val errorMessage by productViewModel.errorMessage.collectAsState()
-
     val isFormValid = name.isNotBlank() &&
             description.isNotBlank() &&
             (!applyPrice || (price.toDoubleOrNull() != null && price.toDouble() > 0))
 
-    LaunchedEffect(isSuccess) {
-        if (isSuccess) {
-            productViewModel.resetStatus()
-            navController.popBackStack()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -83,7 +86,7 @@ fun CreateProductServiceScreen(
                     priceError = applyPrice && (price.toDoubleOrNull() == null || price.toDouble() <= 0)
 
                     if (isFormValid) {
-                        onGuardar(
+                        onSaveClick(
                             ProductService(
                                 id = System.currentTimeMillis().toString(),
                                 name = name,
@@ -91,17 +94,26 @@ fun CreateProductServiceScreen(
                                 applyPrice = applyPrice,
                                 price = price.toDoubleOrNull(),
                                 placeId = placeId
-                            )
+                            ),
+                            pickedImages
                         )
-                        navController.popBackStack()
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                enabled = isFormValid
+                enabled = isFormValid && !isLoading
             ) {
-                Text(stringResource(R.string.create_product_save))
+                // Muestra el estado de carga
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 3.dp
+                    )
+                } else {
+                    Text(stringResource(R.string.create_product_save))
+                }
             }
         }
     ) { padding ->
@@ -115,7 +127,7 @@ fun CreateProductServiceScreen(
         ) {
             if (errorMessage != null) {
                 Text(
-                    text = errorMessage!!,
+                    text = errorMessage,
                     color = Color.Red,
                     fontWeight = FontWeight.Bold
                 )
@@ -211,10 +223,34 @@ fun CreateProductServiceScreen(
             Spacer(Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate(UserRouteTab.AddImageProductService) },
+                onClick = onAddImagesClick,
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text(stringResource(R.string.create_product_images))
+            }
+
+            if (pickedImages.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    pickedImages.forEach { uri ->
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                        ) {
+                            AsyncImage(
+                                model = uri,
+                                contentDescription = "Imagen seleccionada",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.matchParentSize()
+                            )
+                        }
+                    }
+                }
             }
         }
     }
