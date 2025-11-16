@@ -54,7 +54,7 @@ fun AddLocationScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(600.dp),
+                    .height(400.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFE8EAF6))
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -64,7 +64,7 @@ fun AddLocationScreen(
                     Map (
                         modifier = Modifier
                             .fillMaxSize()
-                            .height(600.dp),
+                            .height(400.dp),
                         activateClick = true,
                         onMapClickListener = { point ->
                             clickedPoint = point

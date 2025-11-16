@@ -127,14 +127,6 @@ fun SearchPlacesScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    stringResource(R.string.search_places_distance_filter_label),
-                    style = ty.labelLarge,
-                    color = cs.onSurfaceVariant
-                )
-
                 Spacer(Modifier.height(20.dp))
 
                 Button(
