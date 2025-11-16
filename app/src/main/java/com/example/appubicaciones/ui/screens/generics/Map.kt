@@ -21,8 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.appubicaciones.R
 import com.example.appubicaciones.data.model.Place
@@ -43,6 +41,7 @@ fun Map(
     activateClick: Boolean = false,
     places: List<Place> = emptyList(),
     onMapClickListener: (Point) -> Unit = {},
+    onPlaceClick: (String) -> Unit = {},
     zoomValue: Double = 7.0
 ){
 
@@ -107,9 +106,16 @@ fun Map(
         if (places.isNotEmpty()){
             places.forEach { place ->
                 PointAnnotation(
-                    point = Point.fromLngLat(place.longitude, place.latitude)
+                    point = Point.fromLngLat(place.longitude, place.latitude),
+                    onClick = {
+                        onPlaceClick(place.id)
+                        true
+                    }
                 ){
                     iconImage = marker
+                    textField = place.name
+                    textSize = 12.0
+                    textOffset = listOf(0.0, 2.5)
                 }
             }
         }

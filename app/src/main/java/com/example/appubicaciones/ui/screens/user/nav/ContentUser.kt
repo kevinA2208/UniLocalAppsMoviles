@@ -101,7 +101,11 @@ fun ContentUser(
                         tabNavController.navigate(UserRouteTab.UserProfile)
                     }
                 },
-                onSearchClick = { tabNavController.navigate(UserRouteTab.SearchPlaces) }
+                onSearchClick = { tabNavController.navigate(UserRouteTab.SearchPlaces) },
+                onPlaceClick = { placeId ->
+                    tabNavController.navigate(UserRouteTab.PlaceDetail(placeId))
+                }
+
             )
         }
         composable<UserRouteTab.CreatePlace> { backStackEntry ->

@@ -20,7 +20,8 @@ import com.example.appubicaciones.viewmodel.PlaceViewModel
 @Composable
 fun MapScreen(
     onAddPlaceClick: () -> Unit = {},
-    onSearchClick: () -> Unit = {}
+    onSearchClick: () -> Unit = {},
+    onPlaceClick: (String) -> Unit = {}
 ) {
 
     val placeViewModel: PlaceViewModel = viewModel()
@@ -64,6 +65,7 @@ fun MapScreen(
                 Map(
                     modifier = Modifier.fillMaxSize(),
                     places = places,
+                    onPlaceClick = onPlaceClick,
                     zoomValue = 2.0
                 )
 
