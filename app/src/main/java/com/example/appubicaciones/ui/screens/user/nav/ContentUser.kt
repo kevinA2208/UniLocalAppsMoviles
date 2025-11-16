@@ -122,6 +122,12 @@ fun ContentUser(
                 .getStateFlow("picked_address", "")
             val addr by addrFlow.collectAsStateWithLifecycle()
 
+            val latFlow = backStackEntry.savedStateHandle.getStateFlow("picked_latitude", 0.0)
+            val latitude by latFlow.collectAsStateWithLifecycle()
+
+            val lngFlow = backStackEntry.savedStateHandle.getStateFlow("picked_longitude", 0.0)
+            val longitude by lngFlow.collectAsStateWithLifecycle()
+
             LaunchedEffect(Unit) {
                 placeViewModel.resetStatus()
             }
@@ -129,6 +135,8 @@ fun ContentUser(
             CreatePlaceScreen(
                 initialAddress = addr,
                 pickedImages = pickedUris,
+                latitude = latitude,
+                longitude = longitude,
                 onAddImagesClick = { tabNavController.navigate(UserRouteTab.AddImages) },
                 onLoadLocationClick = { tabNavController.navigate(UserRouteTab.AddLocation) },
                 onSaveClick = { name, description, dayFrom, dayTo, openHour, closeHour, phones, category, address, images ->
@@ -142,6 +150,8 @@ fun ContentUser(
                         phone = phones,
                         category = category,
                         address = address,
+                        latitude = latitude,
+                        longitude = longitude,
                         verification_completed = false
                     )
                     placeViewModel.createPlace(newPlace, images, context)
@@ -163,10 +173,13 @@ fun ContentUser(
         composable<UserRouteTab.AddLocation> {
             AddLocationScreen(
                 initialAddress = "",
-                onSaveLocation = { newAddress ->
+                onSaveLocation = { point ->
                     tabNavController.previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set("picked_address", newAddress)
+                        ?.set("picked_latitude", point.latitude())
+                    tabNavController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("picked_longitude", point.longitude())
 
                     tabNavController.popBackStack()
                 },

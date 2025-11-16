@@ -33,6 +33,8 @@ import com.example.appubicaciones.ui.screens.generics.DropdownSelector
 fun CreatePlaceScreen(
     initialAddress: String = "",
     pickedImages: List<Uri> = emptyList(),
+    latitude: Double,
+    longitude: Double,
     onAddImagesClick: () -> Unit,
     onSaveClick: (
         name: String,
@@ -58,6 +60,9 @@ fun CreatePlaceScreen(
 
     // Para la dirección, necesitamos usar el `initialAddress` que ya recibes
     var address by rememberSaveable(initialAddress) { mutableStateOf(initialAddress) }
+
+    val latString = if (latitude != 0.0) String.format("%.6f", latitude) else ""
+    val lngString = if (longitude != 0.0) String.format("%.6f", longitude) else ""
 
     var dayFrom by rememberSaveable { mutableStateOf(Days.MONDAY) }
     var dayTo by rememberSaveable { mutableStateOf(Days.SUNDAY) }
@@ -161,6 +166,27 @@ fun CreatePlaceScreen(
             label = { Text(stringResource(R.string.create_place_address)) },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            OutlinedTextField(
+                value = latString,
+                onValueChange = {},
+                label = { Text("Latitud") },
+                modifier = Modifier.weight(1f),
+                readOnly = true,
+                enabled = false
+            )
+            OutlinedTextField(
+                value = lngString,
+                onValueChange = {},
+                label = { Text("Longitud") },
+                modifier = Modifier.weight(1f),
+                readOnly = true,
+                enabled = false
+            )
+        }
 
         Spacer(Modifier.height(16.dp))
 

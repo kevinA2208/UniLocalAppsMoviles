@@ -9,13 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appubicaciones.R
+import com.example.appubicaciones.ui.screens.generics.Map
+import com.example.appubicaciones.viewmodel.PlaceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +22,14 @@ fun MapScreen(
     onAddPlaceClick: () -> Unit = {},
     onSearchClick: () -> Unit = {}
 ) {
+
+    val placeViewModel: PlaceViewModel = viewModel()
+    val places by placeViewModel.places.collectAsState()
+
+    LaunchedEffect(Unit) {
+        placeViewModel.getAllPlaces()
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -31,7 +38,6 @@ fun MapScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Barra de búsqueda
             OutlinedTextField(
                 value = "",
                 onValueChange = {},
@@ -50,33 +56,31 @@ fun MapScreen(
                 shape = MaterialTheme.shapes.medium
             )
 
-            // Texto de mapa no disponible
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(R.string.error_map_not_found),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                // Mapa
+                Map(
+                    modifier = Modifier.fillMaxSize(),
+                    places = places,
+                    zoomValue = 2.0
                 )
-            }
-        }
 
-        // Botón flotante para añadir lugar
-        FloatingActionButton(
-            onClick = onAddPlaceClick,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(R.string.map_add_place_description)
-            )
+                // Botón flotante para añadir lugar
+                FloatingActionButton(
+                    onClick = onAddPlaceClick,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.map_add_place_description)
+                    )
+                }
+            }
         }
     }
 }
+
